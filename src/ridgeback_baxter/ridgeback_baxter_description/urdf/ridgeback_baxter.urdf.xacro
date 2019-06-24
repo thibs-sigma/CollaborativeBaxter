@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<robot name="ridgeback_baxter" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:arg name="pedestal" default="false"/>
+  <xacro:arg name="pedestal_ridgeback" default="true"/>
+
+
+  <!--Ridgeback Robot-->
+  <xacro:include filename="$(find ridgeback_description)/urdf/ridgeback.urdf.xacro" />
+  <xacro:include filename="$(find ridgeback_description)/urdf/accessories/hokuyo_ust-10lx_mount.urdf.xacro" />
+    <xacro:hokuyo_ust-10lx_mount prefix="front"
+                                 topic="front/scan"
+                                 location="1" />
+    <xacro:hokuyo_ust-10lx_mount prefix="rear"
+                                 topic="rear/scan"
+                                 location="-1" />
+
+  <!-- Baxter Robot -->
+  <xacro:include filename="$(find baxter_description)/urdf/baxter.urdf.xacro" />
+
+  <xacro:property name="pedestal_height" value="0.85" />
+  <xacro:property name="pedestal_diameter" value="0.203" />
+  <xacro:property name="pedestal_offset_x" value="0.2" />
+
+
+
+  <!-- Link Baxter and Ridgeback-->
+  <joint name="ridgeback_base_to_baxter" type="fixed">
+      <origin rpy="0 0 0" xyz="${pedestal_offset_x} 0 ${pedestal_height}" />
+      <parent link="chassis_link" />
+      <child link="base" />
+  </joint>
+
+</robot>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- display node for the detections -->
+  <node pkg="cob_people_detection" type="people_detection_display_node" name="people_detection_display" output="screen">
+    <rosparam command="load" file="$(find cob_people_detection)/ros/launch/people_detection_display_params.yaml"/>
+    <remap from="~face_position_array" to="detection_tracker/face_position_array"/>
+    <remap from="~face_detections" to="face_detector/face_positions"/>
+    <remap from="~colorimage_in" to="sensor_message_gateway/colorimage_out"/>
+  </node>
+
+  <!-- Image viewer display -->
+  <node name="people_detection_viewer" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <remap from="image" to="people_detection_display/face_position_image"/>
+    <param name="autosize" value="true"/>
+  </node>
+
+</launch>

@@ -1,0 +1,255 @@
+<robot
+  name="mounting_d435_v6">
+  <link
+    name="tripod_link">
+    <inertial>
+      <origin
+        xyz="1.4594E-33 3.5995E-18 0.052882"
+        rpy="0 0 0" />
+      <mass
+        value="0.042726" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v6/meshes/tripod_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v6/meshes/tripod_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="support_link">
+    <inertial>
+      <origin
+        xyz="1.0467E-07 -1.0782E-06 0.02945"
+        rpy="0 0 0" />
+      <mass
+        value="0.026942" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v6/meshes/support_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v6/meshes/support_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="tripod_to_support"
+    type="fixed">
+    <origin
+      xyz="0 0 0.123"
+      rpy="-6.0126E-17 1.1576E-17 0.19021" />
+    <parent
+      link="tripod_link" />
+    <child
+      link="support_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="camera1_link">
+    <inertial>
+      <origin
+        xyz="0.0017129 2.5534E-06 -0.013507"
+        rpy="0 0 0" />
+      <mass
+        value="0.037509" />
+      <inertia
+        ixx="1.4392E-06"
+        ixy="2.0879E-08"
+        ixz="1.004E-07"
+        iyy="2.4834E-06"
+        iyz="2.5952E-08"
+        izz="1.1101E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v6/meshes/camera1_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v6/meshes/camera1_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="support_to_camera1"
+    type="fixed">
+    <origin
+      xyz="-0.040444 0.02335 0.037"
+      rpy="2.618 -1.5708 0" />
+    <parent
+      link="support_link" />
+    <child
+      link="camera1_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="camera2_link">
+    <inertial>
+      <origin
+        xyz="0.0017129 2.4997E-06 -0.013507"
+        rpy="0 0 0" />
+      <mass
+        value="0.037509" />
+      <inertia
+        ixx="1.4392E-06"
+        ixy="2.0877E-08"
+        ixz="1.004E-07"
+        iyy="2.4834E-06"
+        iyz="2.5964E-08"
+        izz="1.1101E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v6/meshes/camera2_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v6/meshes/camera2_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="support_to_camera2"
+    type="fixed">
+    <origin
+      xyz="-0.040444 0.02335 0.037"
+      rpy="1.5708 -1.5708 0" />
+    <parent
+      link="support_link" />
+    <child
+      link="camera2_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="camera3_link">
+    <inertial>
+      <origin
+        xyz="0.0017129 2.5327E-06 -0.013507"
+        rpy="0 0 0" />
+      <mass
+        value="0.037509" />
+      <inertia
+        ixx="1.4392E-06"
+        ixy="2.0878E-08"
+        ixz="1.004E-07"
+        iyy="2.4834E-06"
+        iyz="2.596E-08"
+        izz="1.1101E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v6/meshes/camera3_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v6/meshes/camera3_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="support_to_camera3"
+    type="fixed">
+    <origin
+      xyz="-0.040444 0.02335 0.037"
+      rpy="0.5236 -1.5708 0" />
+    <parent
+      link="support_link" />
+    <child
+      link="camera3_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

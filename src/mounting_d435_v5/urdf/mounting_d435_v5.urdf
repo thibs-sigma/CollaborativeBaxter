@@ -1,0 +1,96 @@
+<robot
+  name="mounting_d435_v5">
+  <link
+    name="tripod_link">
+    <inertial>
+      <origin
+        xyz="1.45938641361739E-33 0.0528823529411765 -3.61522582557462E-19"
+        rpy="0 0 0" />
+      <mass
+        value="0.0427256600888212" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v5/meshes/tripod_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v5/meshes/tripod_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="support_link">
+    <inertial>
+      <origin
+        xyz="-0.00337420801581788 0.159923498872686 -0.0175324291802328"
+        rpy="0 0 0" />
+      <mass
+        value="0.139469499666917" />
+      <inertia
+        ixx="2.63773207502885E-05"
+        ixy="8.45219349955877E-07"
+        ixz="8.25069301109476E-06"
+        iyy="8.38447623002275E-05"
+        iyz="4.17067461832438E-06"
+        izz="6.7660425170179E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v5/meshes/support_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mounting_d435_v5/meshes/support_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="tripod_to_support"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5707963267949 0 0" />
+    <parent
+      link="tripod_link" />
+    <child
+      link="support_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>
