@@ -10,19 +10,22 @@ from cv_bridge import CvBridge
 
 is_moving = False
 
-img_waiting = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/waiting.png')
+img_waiting = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/waiting.png')
 msg_waiting = CvBridge().cv2_to_imgmsg(img_waiting, encoding="bgr8")
 
-img_sleeping = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/sleeping.png')
+img_sleeping = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/sleeping.png')
 msg_sleeping = CvBridge().cv2_to_imgmsg(img_sleeping, encoding="bgr8")
 
-img_requestScrewdriver = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/request_screwdriver.png')
-msg_requestScrewdriver = CvBridge().cv2_to_imgmsg(img_requestScrewdriver, encoding="bgr8")
+img_assemblyTask = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/assembly_task.png')
+msg_assemblyTask = CvBridge().cv2_to_imgmsg(img_assemblyTask, encoding="bgr8")
 
-img_requestMarker = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/request_marker.png')
-msg_requestMarker = CvBridge().cv2_to_imgmsg(img_requestMarker, encoding="bgr8")
+img_inspectionTask = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/inspection_task.png')
+msg_inspectionTask = CvBridge().cv2_to_imgmsg(img_inspectionTask, encoding="bgr8")
 
-img_exit = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/exit.png')
+img_pickupObject = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/pickup_object.png')
+msg_pickupObject = CvBridge().cv2_to_imgmsg(img_pickupObject, encoding="bgr8")
+
+img_exit = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/exit.png')
 msg_exit = CvBridge().cv2_to_imgmsg(img_exit, encoding="bgr8")
 
 def check_moving(data):
@@ -62,16 +65,26 @@ def poll_object_request():
         if (wheelIndex_value % 3) == 0 :
             # Debug terminal
             print "Pickup object"
-            # desired_object = "screwdriver"
-            # BAXTER SCREEN OUTPUT
-            # image_pub.publish(msg_requestScrewdriver)
+
+            while navigatorOK_state != True:
+                # BAXTER SCREEN OUTPUT
+                image_pub.publish(msg_pickupObject)
+
+            # Roslaunch stuff
+            uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+            launch = roslaunch.parent.ROSLaunchParent(uuid, ["/home/thib/simulation_ws/src/object-recognition/launch/demo.launch"])
+            launch.start()
+            rospy.loginfo("Pickup object launchfile started")
+
+
                 
         if (wheelIndex_value % 3) == 1 :
             # Debug terminal
             print "Assembly task"
             # desired_object = "enclosure"
+
             # BAXTER SCREEN OUTPUT
-            # image_pub.publish(msg_requestMarker)
+            image_pub.publish(msg_assemblyTask)
         
         if (wheelIndex_value % 3) == 2 :
             # Debug terminal

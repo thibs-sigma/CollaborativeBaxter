@@ -30,16 +30,16 @@ desired_object = None
 img_box = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/pickup_box.png')
 msg_box = CvBridge().cv2_to_imgmsg(img_box, encoding="bgr8")
 
-img_movingScrewing = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/moving_screwing.png')
+img_movingScrewing = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/moving_screwing.png')
 msg_movingScrewing = CvBridge().cv2_to_imgmsg(img_movingScrewing, encoding="bgr8")
 
 img_confirmScrewing = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/confirm_screwing.png')
 msg_confirmScrewing = CvBridge().cv2_to_imgmsg(img_confirmScrewing, encoding="bgr8")
 
-img_screwingCompleted = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/screwing_completed.png')
+img_screwingCompleted = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/screwing_completed.png')
 msg_screwingCompleted = CvBridge().cv2_to_imgmsg(img_screwingCompleted, encoding="bgr8")
 
-img_errorRequest = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/error_request.png')
+img_errorRequest = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/error_request.png')
 msg_errorRequest = CvBridge().cv2_to_imgmsg(img_errorRequest, encoding="bgr8")
 
 dinspection = [0.647, -0.114, 0.158, -0.479, -0.500, -0.477, 0.540]
@@ -207,13 +207,7 @@ def pickup():
     # Wait for screwing
     screwing()
 
-    # Wait
-    rospy.sleep(1)
-
     inspection()
-    
-    # Wait
-    rospy.sleep(1)
 
     # rospy.logwarn_throttle(1,"--- ISSUE AFTER SCREWING ---")
 
@@ -289,7 +283,7 @@ def inspection():
     print "Inspection completed!"
     
     # BAXTER SCREEN OUTPUT
-    # image_pub.publish(msg_enjoy)
+    image_pub.publish(msg_enjoy)
 
     print "Going back home"
 

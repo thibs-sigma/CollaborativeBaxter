@@ -57,7 +57,7 @@ def poll_object_request():
                 
         if (wheelIndex_value % 2) == 0 :
             # Debug terminal
-            # print "Object : Enclosure"
+            print "Object : Enclosure"
             desired_object = "enclosure"
             # BAXTER SCREEN OUTPUT
             image_pub.publish(msg_assemblyTask)
