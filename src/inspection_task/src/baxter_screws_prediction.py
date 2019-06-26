@@ -4,6 +4,7 @@ import sys
 import rospy
 import cv2
 import numpy as np
+import os
 from std_msgs.msg import Bool
 from geometry_msgs.msg import Point
 from sensor_msgs.msg import Image
@@ -21,15 +22,21 @@ class webcam_image:
         # Subscriber to determine whether or not to use vision
         self.is_moving_sub = rospy.Subscriber("is_moving",Bool,self.check_moving)
         # Publisher
-        self.object_location_pub = rospy.Publisher("object_location",ObjectInfo,queue_size=10)
+        # self.object_location_pub = rospy.Publisher("object_location",ObjectInfo,queue_size=10)
 
 
-        self.object_info = ObjectInfo()
-        self.object_info.names = ['','','']
-        self.object_info.x = [0,0,0]
-        self.object_info.y = [0,0,0]
-        self.object_info.theta = [0,0,0]
+        # self.object_info = ObjectInfo()
+        # self.object_info.names = ['','','']
+        # self.object_info.x = [0,0,0]
+        # self.object_info.y = [0,0,0]
+        # self.object_info.theta = [0,0,0]
         self.is_moving = False
+
+        self.directory = '/home/thib/simulation_ws/src/inspection_task/src'
+        print "DIRECTORY IS: ",self.directory
+        if not os.path.exists(self.directory):
+            os.mkdir(self.directory)
+
 
     def check_moving(self,data):
         self.is_moving = data.data
@@ -41,13 +48,27 @@ class webcam_image:
             except CvBridgeError as e:
                 print("==[CAMERA MANAGER]==",e)
 
-            global counter
-
-            if counter > 4:
-                counter = 0
-
             scale = 0.75
             frame = (frame*scale).astype(np.uint8)
+
+            crop_img = frame[57:368, 85:584] # Use numpy slicing to crop the input image (no more background issues)
+            cv2.imshow('crop img (video)',crop_img) 
+
+            if cv2.waitKey(1) & 0xFF == ord('c'):
+                image_path = self.directory + '/' + str("capture_inspection") + '.png'
+                cv2.imwrite(image_path, crop_img)
+                print "Capturing image",image_path
+
+
+                self.screwDetection(crop_img)
+
+
+            # self.screwDetection(crop_img)
+            
+            cv2.imshow("Camera input (video)",frame)
+
+            # self.screwDetection(frame)
+            cv2.waitKey(3)
 
             # Split frame into left and right halves
             # left_frame = frame[0:frame.shape[0], 0:frame.shape[1]/3]
@@ -56,6 +77,8 @@ class webcam_image:
 
             # Create list of left and right images
             # frames = [left_frame, middle_frame, right_frame]
+
+    def screwDetection(self, frame):
 
             # for i,f in enumerate(frames):
             kps, des = sift.detectAndCompute(frame, None)
@@ -74,18 +97,20 @@ class webcam_image:
 
             # CHANGE THESE VALUES TO CALIBRATE BOUNDING BOXES
             th, dst = cv2.threshold(gray, 60, 255, cv2.THRESH_BINARY)
-            # dst = cv2.adaptiveThreshold(gray, 200, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
+            # dst = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 12)
 
             # new_img = cv2.bitwise_not(dst, mask)
             cv2.imshow('frame',frame)
             # cv2.imshow('mask',mask)
             cv2.imshow('res',dst)
 
-            crop_img = dst[57:368, 85:584] # Use numpy slicing to crop the input image (no more background issues)
-            cv2.imshow('crop img',crop_img) 
+            # crop_img_gray = dst[57:368, 85:584] # Use numpy slicing to crop the input image (no more background issues)
+            # crop_img = frame[57:368, 85:584] # Use numpy slicing to crop the input image (no more background issues)
+
+            # cv2.imshow('crop img',crop_img_gray) 
 
             # Find contours on binary image (cropped)
-            img_contours, contours, hierarchy = cv2.findContours(crop_img,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+            img_contours, contours, hierarchy = cv2.findContours(dst,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
             contour_area=0
             areamax=0
@@ -102,7 +127,8 @@ class webcam_image:
                 for cnt in contours:
                     moments = cv2.moments(cnt)                          # Calculate moments
                     contour_area = moments['m00']                    	# Contour area from moment
-                    if moments['m00']>10 and contour_area > areamax:
+                    # print "moments['m00']: ", moments['m00']
+                    if moments['m00']>750:
                         cx = int(moments['m10']/moments['m00'])         # cx = M10/M00
                         cy = int(moments['m01']/moments['m00'])         # cy = M01/M00 
                         cxmax=cx
@@ -114,16 +140,9 @@ class webcam_image:
                         (x,y),radius = cv2.minEnclosingCircle(cntmax)
                         radius = int(radius)
                         # cv2.drawContours(frame,[cntmax],0,(0,255,0),1)   # draw contours in green color
-                        cv2.circle(frame,(cxmax,cymax),radius,(0,0,255),-1) # Draw plain circle   
+                        cv2.circle(frame,(cxmax,cymax),radius,(0,255,0),2) # Draw plain circle   
                         cv2.imshow('output',frame)   
                         
-                    print "Nb screws (=contours): ", len(contours)    
-
-                # (x,y),radius = cv2.minEnclosingCircle(cnt)
-                # center = (int(x),int(y))
-                # radius = int(radius)
-                # cv2.circle(frame,center,radius,(0,0,255), -1) # Draw red circle
-                # cv2.imshow('contours img',frame)
 
             else:
                 print "No contour found..."
@@ -215,6 +234,8 @@ class webcam_image:
 def main(args):
     rospy.init_node('webcam_image', anonymous=True)
     ic = webcam_image()
+
+    
 
     try:
         rospy.spin()
