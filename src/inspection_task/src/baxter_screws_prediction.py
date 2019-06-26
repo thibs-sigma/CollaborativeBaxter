@@ -61,6 +61,8 @@ class webcam_image:
 
 
                 self.screwDetection(crop_img)
+                
+
 
 
             # self.screwDetection(crop_img)
@@ -118,115 +120,61 @@ class webcam_image:
             cymax=0  
             cntmax= None
 
-            # Draw the contours
-            if len(contours) > 0:
-                # print "Nb contours", len(contours)
-                # cnt=contours[len(contours)-1]
-                # cv2.drawContours(img_contours2, [cnt], 0, (0,255,0), 3)
+            # Test Contour detection (output OK, but not counting properly...)
+            # if len(contours) > 0:
+            #     i = 0
+            #     while contours:
+            #         i = (i+1)
+            #         contours = contours.next()
+            #     print "Nb contours", len(contours)
+            #     # cnt=contours[len(contours)-1]
+            #     # cv2.drawContours(img_contours2, [cnt], 0, (0,255,0), 3)
 
-                for cnt in contours:
-                    moments = cv2.moments(cnt)                          # Calculate moments
-                    contour_area = moments['m00']                    	# Contour area from moment
-                    # print "moments['m00']: ", moments['m00']
-                    if moments['m00']>750:
-                        cx = int(moments['m10']/moments['m00'])         # cx = M10/M00
-                        cy = int(moments['m01']/moments['m00'])         # cy = M01/M00 
-                        cxmax=cx
-                        cymax=cy
-                        cntmax= cnt
-                        areamax= contour_area
+            #     for cnt in contours:
+            #         moments = cv2.moments(cnt)                          # Calculate moments
+            #         contour_area = moments['m00']                    	# Contour area from moment
+            #         # print "moments['m00']: ", moments['m00']
+            #         if moments['m00']>750:
+            #             cx = int(moments['m10']/moments['m00'])         # cx = M10/M00
+            #             cy = int(moments['m01']/moments['m00'])         # cy = M01/M00 
+            #             cxmax=cx
+            #             cymax=cy
+            #             cntmax= cnt
+            #             areamax= contour_area
                         
-                    if cntmax is not None:
-                        (x,y),radius = cv2.minEnclosingCircle(cntmax)
-                        radius = int(radius)
-                        # cv2.drawContours(frame,[cntmax],0,(0,255,0),1)   # draw contours in green color
-                        cv2.circle(frame,(cxmax,cymax),radius,(0,255,0),2) # Draw plain circle   
-                        cv2.imshow('output',frame)   
-                        
-
-            else:
-                print "No contour found..."
-            
-            # cv2.imshow('contours',img_contours)
-            
-            # UNCOMMENT IF YOU WANT TO SEE OUTPUT OF OPENCV THRESHOLDING PROCESS
-            # cv2.imshow('test' + str(i), new_img)
-
-            # Find contours of each partial frame and put bounding box around contour
-            # _, contours, hierarchy = cv2.findContours(dst,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
-            # if len(contours) <= 0:
-            #     # print ("Waiting for something to grasp...")
-            #     rospy.logwarn_throttle(1, "Waiting for something to grasp...")
+            #         if cntmax is not None:
+            #             (x,y),radius = cv2.minEnclosingCircle(cntmax)
+            #             radius = int(radius)
+            #             print "radius: ", radius
+            #             # cv2.drawContours(frame,[cntmax],0,(0,255,0),1)   # draw contours in green color
+            #             cv2.circle(frame,(cxmax,cymax),radius,(0,255,0),12) # Draw plain circle   
+            #             cv2.imshow('output',frame)
             # else:
-            #     contours = sorted(contours, key = cv2.contourArea, reverse = True)[:20]
-            #     cnt = contours[0]
+            #     print "No contour found..."
 
+            # detectionGray = cv2.cvtColor(frame, cv2.COLOR_RGBA2GRAY)
+            # cv2.imshow('detectionGray (count detected screws)', gray)
 
-            #     # M = cv2.moments(cnt)
-            #     # self.object_info.x[i] = int(M["m10"]/M["m00"])
-            #     # self.object_info.y[i] = int(M["m01"]/M["m00"])
+            # Test Hough Circles Detection (this is working, check robustness)
+            gray = cv2.medianBlur(gray, 5)
+            cv2.imshow('gray after blur', gray)
+            nbScrews = cv2.HoughCircles(gray,cv2.HOUGH_GRADIENT,1,20,param1=100,param2=15,minRadius=18,maxRadius=23)
+            if nbScrews is not None:
+                nbScrews = np.uint16(np.around(nbScrews))
+                for i in nbScrews[0,:]:
+                    # draw the outer circle
+                    cv2.circle(frame,(i[0],i[1]),i[2],(0,255,0),2)
+                    # draw the center of the circle
+                    cv2.circle(frame,(i[0],i[1]),2,(0,0,255),3)
+                print "echo (nbscrews): ", nbScrews
+                print "Nb screws: ", nbScrews.shape[1]
+                # cv2.circle(gray,(nbScrews[0],nbScrews[1]),nbScrews[2],(0,255,0),12) # Draw plain circle
+                cv2.imshow('detectionHough (count detected screws)', frame)
+            else:
+                print "No screw detected!"
+                        
 
-            #     # cv2.circle(frames[i],(int(M["m10"]/M["m00"]),int(M["m01"]/M["m00"])), 5, (255*one_hot[0],255*one_hot[1],255*one_hot[2]), -1)
-
-            #     rect = cv2.minAreaRect(cnt)
-            #     box = cv2.boxPoints(rect)
-            #     cv2.drawContours(frames[i],[np.int0(box)],0,(255*one_hot[0],255*one_hot[1],255*one_hot[2]),2)
-
-            #     # Calculate angle and center of each bounding box
-            #     if len(cnt) > 5:
-            #         (x,y),(MA,mA),angle = cv2.fitEllipse(cnt)
-            #         if x >= 0 and y >= 0:
-            #             self.object_info.x[i] = int(x) + frame.shape[1]/3 * i
-            #             self.object_info.y[i] = int(y)
-            #             self.object_info.theta[i] = np.deg2rad(angle)
-
-            # # Check to make sure des has elements and there are at least 15 keypoints
-            # if des is not None and len(kps) > 15:
-            #     test_features = np.zeros((1, k), "float32")
-            #     words, distance = vq(whiten(des), vocabulary)
-            #     for w in words:
-            #         if w >= 0 and w < 100:
-            #             test_features[0][w] += 1
-
-            #     # Scale the features
-            #     test_features = std_slr.transform(test_features)
-
-            #     # predictions based on classifier (more than 2)
-            #     predictions[i][counter] = [class_names[j] for j in classifier.predict(test_features)][0]
-            #     prediction = max(set(predictions[i]), key=predictions[i].count)
-
-            #     self.object_info.names[1] = prediction
-
-            #     # Find the point at the top of each bounding box to put label
-            #     labelY = int(min(box[0][1],box[1][1],box[2][1],box[3][1]))
-            #     labelX = [int(pt[0]) for pt in box if int(pt[1]) == labelY][0]
-
-            #     # Add label to partial frame
-            #     font = cv2.FONT_HERSHEY_SIMPLEX
-            #     cv2.putText(frames[i], prediction, (labelX,labelY-5), font, 0.5, (255*one_hot[0],255*one_hot[1],255*one_hot[2]), 1)
-
-            # # Combine smaller frames into one
-            # frame[0:frame.shape[0], 0:frame.shape[1]/3] = frames[0]
-            # frame[0:frame.shape[0], frame.shape[1]/3:2*frame.shape[1]/3] = frames[1]
-            # frame[0:frame.shape[0], 2*frame.shape[1]/3:frame.shape[1]] = frames[2]
-
-            # # Add a dividing line down the middle of the frame
-            # cv2.line(frame, (frame.shape[1]/3,0), (frame.shape[1]/3,frame.shape[0]), (255,255,255), 1)
-            # cv2.line(frame, (2*frame.shape[1]/3,0), (2*frame.shape[1]/3,frame.shape[0]), (255,255,255), 1)
-
-
-            # # Resize image to fit monitor (if monitor is attached)
-            # if needResizing:
-            #     frame = cv2.resize(frame, (1920, 1080), interpolation = cv2.INTER_CUBIC)
-
-            # counter += 1
-
-            # # Display the resulting frame
-            # cv2.imshow('Object recognition', frame)
-
-            # self.object_location_pub.publish(self.object_info)
-
-
+            
             cv2.waitKey(1)
 
 
