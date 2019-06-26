@@ -107,3 +107,4 @@ pose:
     z: 0.537036659978
     w: 0.457174338637
 
+Inspection task: (crop input image to only have the enclosure into the frame)

@@ -102,7 +102,7 @@ def move_pos(goal, limb, timeout=3):
         # Begin interaction with move_it joint_action_server.
         # Object of type move_group_commander is used to
         # interact with Baxter using joint_action_server
-        la = moveit_commander.MoveGroupCommander("right_arm")
+        la = moveit_commander.MoveGroupCommander("left_arm")
 
         # Set desired joint angles to plan in joint space
         la.set_joint_value_target(des_joints)
@@ -127,7 +127,7 @@ def move_pos(goal, limb, timeout=3):
                 des_joints[i] = ikt.joints[0].position[i]
 
             # Same moveit! calling strategy as is written in if code block
-            la = moveit_commander.MoveGroupCommander("right_arm")
+            la = moveit_commander.MoveGroupCommander("left_arm")
             la.set_joint_value_target(des_joints)
             la.plan()
             la.go()

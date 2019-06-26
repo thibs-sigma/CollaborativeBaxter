@@ -42,8 +42,8 @@ msg_screwingCompleted = CvBridge().cv2_to_imgmsg(img_screwingCompleted, encoding
 img_errorRequest = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/error_request.png')
 msg_errorRequest = CvBridge().cv2_to_imgmsg(img_errorRequest, encoding="bgr8")
 
-dinspection = [0.647, -0.114, 0.158, -0.479, -0.500, -0.477, 0.540]
-dinspectionCamera = [0.529, 0.112, 0.155, 0.529, -0.472, 0.537, 0.457]
+dinspection = [0.690, -0.018, 0.167, 0.353, 0.187, 0.781, -0.479]
+# dinspectionCamera = [0.529, 0.112, 0.155, 0.529, -0.472, 0.537, 0.457]
 
 # THIS WORKS
 

@@ -49,9 +49,9 @@ position: [-0.44830588525951215, 1.8465293734170667, -0.004601942363656241, -1.0
 
   <!-- need to modify this somehow -->
   <!-- <node pkg="inspection_task" type="pickup_object.py" name="pickup_object" output="screen" respawn="true" launch-prefix="xterm -e "/> -->
-  <node pkg="inspection_task" type="pickup_object.py" name="pickup_object" output="screen" respawn="false" />
+  <node pkg="inspection_task" type="inspection.py" name="inspection" output="screen" respawn="false" />
 
-  <node pkg="inspection_task" type="request_object.py" name="request_object" output="screen" respawn="false" required="true"/>
+  <!-- <node pkg="inspection_task" type="request_object.py" name="request_object" output="screen" respawn="false" required="true"/> -->
 
   <!-- Gripper Cuff control -->
   <node pkg="baxter_examples" type="gripper_cuff_control.py" name="gripper_cuff_control" output="screen" respawn="false" />
