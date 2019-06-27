@@ -168,7 +168,7 @@ def pickup():
 
     pnode.initplannode(dsafe_rotated, "right")
 
-    gc.command(position=100.0, effort=50.0)
+    gc.command(position=100.0, effort=50.0) # Open gripper
     gc.wait()
 
     # EDIT HERE FOR PICKING STUFF

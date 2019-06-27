@@ -27,8 +27,11 @@ desired_object = None
 # screwingOK = False
 # inspectionOK = False
 
-img_box = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/pickup_box.png')
-msg_box = CvBridge().cv2_to_imgmsg(img_box, encoding="bgr8")
+img_gettingReady = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/ready_inspection.png')
+msg_gettingReady = CvBridge().cv2_to_imgmsg(img_gettingReady, encoding="bgr8")
+
+img_inspectionRunning = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/inspection_running.png')
+msg_inspectionRunning = CvBridge().cv2_to_imgmsg(img_inspectionRunning, encoding="bgr8")
 
 dinspectionCamera = [0.666, -0.023, 0.188, 0.790, 0.464, -0.351, 0.191]
 
@@ -46,11 +49,6 @@ def getCameraState(data):
     global camera_state_info
     camera_state_info = data
 
-
-def getDesiredObject(data):
-    global desired_object
-    desired_object = data.data
-
 # THIS WORKS
 
 # Callback OK wheel button left navigator (WORKING)
@@ -62,17 +60,28 @@ def navigatorCallback(data):
 # Action when object picked up
 def inspection():
 
+    gc = GripperClient()
+
     # BAXTER SCREEN OUTPUT
     # image_pub.publish(msg_confirm)
     
     rospy.logwarn_throttle(1,"Getting ready for inspection!")
+
+    # Display action on Baxter's screen
+    image_pub.publish(msg_gettingReady)
 
     # Wait
     rospy.sleep(1)
 
     pnode.initplannode(dinspectionCamera, "left")
 
+    gc.command(position=0.0, effort=0.0) # Close gripper
+    gc.wait()
+
     rospy.logwarn_throttle(1,"Inspection in progress...")
+    
+    # Display action on Baxter's screen
+    image_pub.publish(msg_inspectionRunning)
 
     # CHANGE THIS
     while navigatorOK_state != True:    

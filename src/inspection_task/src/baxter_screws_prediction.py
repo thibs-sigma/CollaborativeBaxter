@@ -6,12 +6,13 @@ import cv2
 import numpy as np
 import os
 from std_msgs.msg import Bool
-from geometry_msgs.msg import Point
+# from geometry_msgs.msg import Point
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-from sklearn.externals import joblib
-from scipy.cluster.vq import vq, kmeans, whiten
-from object_recognition.msg import ObjectInfo
+import baxter_interface
+# from sklearn.externals import joblib
+# from scipy.cluster.vq import vq, kmeans, whiten
+# from object_recognition.msg import ObjectInfo
 
 class webcam_image:
     def __init__(self):
@@ -37,6 +38,8 @@ class webcam_image:
         if not os.path.exists(self.directory):
             os.mkdir(self.directory)
 
+        self.analysis = False
+
 
     def check_moving(self,data):
         self.is_moving = data.data
@@ -54,16 +57,20 @@ class webcam_image:
             crop_img = frame[57:368, 85:584] # Use numpy slicing to crop the input image (no more background issues)
             cv2.imshow('crop img (video)',crop_img) 
 
+            
             if cv2.waitKey(1) & 0xFF == ord('c'):
+            # if self.analysis == False:
                 image_path = self.directory + '/' + str("capture_inspection") + '.png'
+                rospy.sleep(1)
                 cv2.imwrite(image_path, crop_img)
                 print "Capturing image",image_path
 
 
                 self.screwDetection(crop_img)
-                
 
+                self.analysis = True
 
+                # Publish baxter message and quit (or running again if missing screws)
 
             # self.screwDetection(crop_img)
             
@@ -72,39 +79,22 @@ class webcam_image:
             # self.screwDetection(frame)
             cv2.waitKey(3)
 
-            # Split frame into left and right halves
-            # left_frame = frame[0:frame.shape[0], 0:frame.shape[1]/3]
-            # middle_frame = frame[0:frame.shape[0], frame.shape[1]/3:2*frame.shape[1]/3]
-            # right_frame = frame[0:frame.shape[0], 2*frame.shape[1]/3:frame.shape[1]]
-
-            # Create list of left and right images
-            # frames = [left_frame, middle_frame, right_frame]
 
     def screwDetection(self, frame):
 
-            # for i,f in enumerate(frames):
-            kps, des = sift.detectAndCompute(frame, None)
-            # frames[i] = cv2.drawKeypoints(f, kps, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS) # draw SIFT points
-            cv2.drawKeypoints(frame, kps, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS) # draw SIFT points
-            
-
-            # Convert current index to one_hot list representation for color assignment later
-            # one_hot = [0,0,0]
-            # one_hot[i] = 1
-
-            # Basic threshold example
+            # Convert into Gray frame
             gray = cv2.cvtColor(frame, cv2.COLOR_RGBA2GRAY)
 
             # mask = cv2.inRange(gray, 106, 255)
 
-            # CHANGE THESE VALUES TO CALIBRATE BOUNDING BOXES
-            th, dst = cv2.threshold(gray, 60, 255, cv2.THRESH_BINARY)
+            # Thresholding image
+            # th, dst = cv2.threshold(gray, 60, 255, cv2.THRESH_BINARY)
             # dst = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 12)
 
             # new_img = cv2.bitwise_not(dst, mask)
-            cv2.imshow('frame',frame)
+            # cv2.imshow('frame',frame)
             # cv2.imshow('mask',mask)
-            cv2.imshow('res',dst)
+            # cv2.imshow('res',dst)
 
             # crop_img_gray = dst[57:368, 85:584] # Use numpy slicing to crop the input image (no more background issues)
             # crop_img = frame[57:368, 85:584] # Use numpy slicing to crop the input image (no more background issues)
@@ -112,15 +102,17 @@ class webcam_image:
             # cv2.imshow('crop img',crop_img_gray) 
 
             # Find contours on binary image (cropped)
-            img_contours, contours, hierarchy = cv2.findContours(dst,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            # img_contours, contours, hierarchy = cv2.findContours(dst,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            # cv2.imshow('img contours',img_contours)
 
-            contour_area=0
-            areamax=0
-            cxmax=0
-            cymax=0  
-            cntmax= None
+
 
             # Test Contour detection (output OK, but not counting properly...)
+            # contour_area=0
+            # areamax=0
+            # cxmax=0
+            # cymax=0  
+            # cntmax= None
             # if len(contours) > 0:
             #     i = 0
             #     while contours:
@@ -155,9 +147,11 @@ class webcam_image:
             # detectionGray = cv2.cvtColor(frame, cv2.COLOR_RGBA2GRAY)
             # cv2.imshow('detectionGray (count detected screws)', gray)
 
+
             # Test Hough Circles Detection (this is working, check robustness)
             gray = cv2.medianBlur(gray, 5)
-            cv2.imshow('gray after blur', gray)
+            # Output debug
+            # cv2.imshow('gray after blur', gray)
             nbScrews = cv2.HoughCircles(gray,cv2.HOUGH_GRADIENT,1,20,param1=100,param2=15,minRadius=18,maxRadius=23)
             if nbScrews is not None:
                 nbScrews = np.uint16(np.around(nbScrews))
@@ -167,14 +161,36 @@ class webcam_image:
                     # draw the center of the circle
                     cv2.circle(frame,(i[0],i[1]),2,(0,0,255),3)
                 print "echo (nbscrews): ", nbScrews
-                print "Nb screws: ", nbScrews.shape[1]
+                intNbScrews = nbScrews.shape[1]
+                print "Nb screws: ", intNbScrews
                 # cv2.circle(gray,(nbScrews[0],nbScrews[1]),nbScrews[2],(0,255,0),12) # Draw plain circle
+
+                # Add text
+                cv2.putText(frame,str(intNbScrews) + "/4 screws",(60,170), cv2.FONT_HERSHEY_DUPLEX, 2,(255,255,255),2,cv2.LINE_AA)
+                
+                # Show output
                 cv2.imshow('detectionHough (count detected screws)', frame)
+                
+                # Save detection image
+                image_path = self.directory + '/' + str("detection") + '.png'
+                rospy.sleep(1)
+                cv2.imwrite(image_path, frame)
+                print "Capturing detection image: ",image_path
+
+                # Resizing image for Baxter's screen
+                
+                
+
+                # Publish image on Baxter's head
+                img_detection = cv2.imread('/home/thib/simulation_ws/src/inspection_task/src/detection.png')
+                new_img = cv2.resize(img_detection, (1024, 600))
+                msg_detection = CvBridge().cv2_to_imgmsg(new_img, encoding="bgr8")
+                image_pub.publish(msg_detection)
+
+
             else:
                 print "No screw detected!"
-                        
-
-            
+                                    
             cv2.waitKey(1)
 
 
@@ -183,25 +199,26 @@ def main(args):
     rospy.init_node('webcam_image', anonymous=True)
     ic = webcam_image()
 
-    
-
     try:
         rospy.spin()
     except KeyboardInterrupt:
         print("Shutting down")
     cv2.destroyAllWindows()
 
+
 if __name__ == '__main__':
     print "OpenCV Version:",cv2.__version__
 
     # Load the classifier, class names, scaler, number of clusters and vocabulary
-    classifier, class_names, std_slr, k, vocabulary = joblib.load("/home/thib/simulation_ws/src/assembly_task/src/dataset_RPLv2.pkl")
+    # classifier, class_names, std_slr, k, vocabulary = joblib.load("/home/thib/simulation_ws/src/assembly_task/src/dataset_RPLv2.pkl")
 
     # Create SIFT object
-    sift = cv2.xfeatures2d.SIFT_create()
+    # sift = cv2.xfeatures2d.SIFT_create()
 
-    predictions = [['','','','',''],['','','','',''],['','','','','']]
+    # predictions = [['','','','',''],['','','','',''],['','','','','']]
     counter = 0
     needResizing = False
+
+    image_pub = rospy.Publisher('/robot/xdisplay', Image, latch=True, queue_size=10)
 
     main(sys.argv)
