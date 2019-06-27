@@ -5,9 +5,7 @@ import rospy
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import image_geometry
-from std_msgs.msg import Bool
-from std_msgs.msg import String
-from std_msgs.msg import Float32
+from std_msgs.msg import Bool, String, Float32, UInt32
 from sensor_msgs.msg import CameraInfo, Image
 from geometry_msgs.msg import Point
 from baxter_core_msgs.msg import EndpointState, DigitalIOState, NavigatorState, DigitalOutputCommand
@@ -24,6 +22,8 @@ object_location = None
 object_orientation = None
 object_name = None
 desired_object = None
+screwsDetected = 0
+
 # screwingOK = False
 # inspectionOK = False
 
@@ -57,9 +57,16 @@ def navigatorCallback(data):
     navigatorOK_state = data.buttons[0]
     # print (navigatorOK_state)
 
+def screwsDetectedCallback(data):
+    global screwsDetected
+    screwsDetected = data.data
+    # print (screwsDetected)
+
+
 # Action when object picked up
 def inspection():
-
+    screwsDetectedMem = UInt32(0)
+    
     gc = GripperClient()
 
     # BAXTER SCREEN OUTPUT
@@ -80,23 +87,36 @@ def inspection():
 
     rospy.logwarn_throttle(1,"Inspection in progress...")
     
-    # Display action on Baxter's screen
-    image_pub.publish(msg_inspectionRunning)
+
 
     # CHANGE THIS
-    while navigatorOK_state != True:    
-        # BLINKING BUTTON LIGHT
-        leftInnerLight_pub.publish('left_inner_light', True)
-        rospy.sleep(0.5)
-        leftInnerLight_pub.publish('left_inner_light', False)
-        rospy.sleep(0.5)
-        
-    print "Inspection completed!"
-    
-    # BAXTER SCREEN OUTPUT
-    image_pub.publish(msg_enjoy)
+    # while navigatorOK_state != True:    
+    #     # BLINKING BUTTON LIGHT
+    #     leftInnerLight_pub.publish('left_inner_light', True)
+    #     rospy.sleep(0.5)
+    #     leftInnerLight_pub.publish('left_inner_light', False)
+    #     rospy.sleep(0.5)
+    #     print screwsDetected
 
-    print "Going back home"
+    while screwsDetected == 0:
+        rospy.logwarn_throttle(1, "Inspection running")
+        # Display action on Baxter's screen
+        image_pub.publish(msg_inspectionRunning)
+    
+
+    if screwsDetected == 4:
+        # Wait
+        print "Inspection completed!"
+        rospy.sleep(2)
+        # BAXTER SCREEN OUTPUT
+        # image_pub.publish(msg_enjoy)
+        rospy.sleep(2)
+        print "Going back home"
+
+    else:
+        print "Missing screws! Inspection to be done again..."
+    
+
 
     return
 
@@ -150,6 +170,8 @@ if __name__ == '__main__':
     # Buttons subscribers
     # rospy.Subscriber("/robot/digital_io/left_lower_button/state", DigitalIOState, buttonOKPress)
     rospy.Subscriber("/robot/navigators/left_navigator/state", NavigatorState, navigatorCallback)
+
+    rospy.Subscriber("/screwsDetected", UInt32, screwsDetectedCallback)
 
 
 

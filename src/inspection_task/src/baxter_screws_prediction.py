@@ -5,7 +5,7 @@ import rospy
 import cv2
 import numpy as np
 import os
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, UInt32
 # from geometry_msgs.msg import Point
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
@@ -45,6 +45,7 @@ class webcam_image:
         self.is_moving = data.data
 
     def callback(self,data):
+        detectedScrewsFunction = 0
         if not self.is_moving:
             try:
                 frame = self.bridge.imgmsg_to_cv2(data,"bgr8")
@@ -63,18 +64,24 @@ class webcam_image:
                 image_path = self.directory + '/' + str("capture_inspection") + '.png'
                 rospy.sleep(1)
                 cv2.imwrite(image_path, crop_img)
-                print "Capturing image",image_path
+                # print "Capturing image",image_path
 
 
-                self.screwDetection(crop_img)
+                detectedScrewsFunction = self.screwDetection(crop_img)
 
                 self.analysis = True
 
                 # Publish baxter message and quit (or running again if missing screws)
+                # print "Analysis OK?: ", self.analysis
+                # print (self.screwDetection(crop_img))
+                
 
             # self.screwDetection(crop_img)
             
             cv2.imshow("Camera input (video)",frame)
+
+            # Publish number screws detected
+            screwsDetected_pub.publish(detectedScrewsFunction)
 
             # self.screwDetection(frame)
             cv2.waitKey(3)
@@ -160,22 +167,28 @@ class webcam_image:
                     cv2.circle(frame,(i[0],i[1]),i[2],(0,255,0),2)
                     # draw the center of the circle
                     cv2.circle(frame,(i[0],i[1]),2,(0,0,255),3)
-                print "echo (nbscrews): ", nbScrews
+                
                 intNbScrews = nbScrews.shape[1]
-                print "Nb screws: ", intNbScrews
-                # cv2.circle(gray,(nbScrews[0],nbScrews[1]),nbScrews[2],(0,255,0),12) # Draw plain circle
+                
+
+                # Debug terminal
+                # print "echo (nbscrews): ", nbScrews
+                print "Nb detected screws: ", intNbScrews, "/4"
+                # screwsDetected_pub.publish(intNbScrews)
+
+
 
                 # Add text
                 cv2.putText(frame,str(intNbScrews) + "/4 screws",(60,170), cv2.FONT_HERSHEY_DUPLEX, 2,(255,255,255),2,cv2.LINE_AA)
                 
                 # Show output
-                cv2.imshow('detectionHough (count detected screws)', frame)
+                # cv2.imshow('detectionHough (count detected screws)', frame)
                 
                 # Save detection image
                 image_path = self.directory + '/' + str("detection") + '.png'
-                rospy.sleep(1)
+                rospy.sleep(0.5)
                 cv2.imwrite(image_path, frame)
-                print "Capturing detection image: ",image_path
+                # print "Capturing detection image: ",image_path
 
                 # Resizing image for Baxter's screen
                 
@@ -187,11 +200,18 @@ class webcam_image:
                 msg_detection = CvBridge().cv2_to_imgmsg(new_img, encoding="bgr8")
                 image_pub.publish(msg_detection)
 
+                # Publish ROS topic
+                # rospy.sleep(2)
+                
+
 
             else:
                 print "No screw detected!"
                                     
             cv2.waitKey(1)
+
+            return intNbScrews
+
 
 
 
@@ -220,5 +240,7 @@ if __name__ == '__main__':
     needResizing = False
 
     image_pub = rospy.Publisher('/robot/xdisplay', Image, latch=True, queue_size=10)
+
+    screwsDetected_pub = rospy.Publisher('/screwsDetected', UInt32, latch=True, queue_size=10) 
 
     main(sys.argv)
