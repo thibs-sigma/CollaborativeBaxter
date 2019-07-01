@@ -60,7 +60,7 @@ class CHOOSEACTION(State):
 
 
     def __init__(self):
-        State.__init__(self, outcomes=['success', 'fail'])
+        State.__init__(self, outcomes=['success', 'stop'])
         
         # Subscribers
         rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
@@ -72,6 +72,33 @@ class CHOOSEACTION(State):
 
     def execute(self, userdata):
         print("Inside CHOOSEACTION state machine\n")
+        pwd = os.getcwd()
+        os.system(pwd + "/src/launch_demo/src/request_action.py")
+        # rospy.loginfo("State machine initialized!")
+        print(self.actionRequested_str)
+        rospy.sleep(1)
+        if self.actionRequested_str == 'q':
+            return 'stop'
+        elif self.actionRequested_str == 'assembly':
+            print ('callback assembly, stateMachine to be completed')
+            return 'success'
+
+class PICKUPOBJECT(State):
+
+
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'fail'])
+        
+        # Subscribers
+        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
+
+    def actionRequestedCallback(self, data):
+        self.actionRequested_str = data.data
+        # print (self.actionRequested_str)
+        # return str(actionRequested_str)
+
+    def execute(self, userdata):
+        print("Inside PICKUPOBJECT state machine\n")
         pwd = os.getcwd()
         os.system(pwd + "/src/launch_demo/src/request_action.py")
         # rospy.loginfo("State machine initialized!")
@@ -91,13 +118,14 @@ if __name__ == "__main__":
         
 
         # Create a SMACH state machine
-        sm = StateMachine(outcomes=['success', 'fail'])
+        sm = StateMachine(outcomes=['success', 'fail', 'stop'])
 
         # Open the container (HERE IS DEFINED THE SM)
         with sm:
             # Reset the Baxter
             StateMachine.add('RESET', RESET(), transitions={'success':'CHOOSE_ACTION'})
-            StateMachine.add('CHOOSE_ACTION', CHOOSEACTION(), transitions={'success':'success', 'fail':'fail'})
+            StateMachine.add('CHOOSE_ACTION', CHOOSEACTION(), transitions={'success':'PICKUP_OBJECT', 'stop':'stop'})
+            StateMachine.add('PICKUP_OBJECT', PICKUPOBJECT(), transitions={'success':'success', 'fail':'fail'})
         
         # Attach a SMACH introspection server
         sis = IntrospectionServer('baxter_SMACH_introspection', sm, '/BAXTER_DEMO')
