@@ -66,22 +66,23 @@ def poll_object_request():
             # Debug terminal
             print "Pickup object"
 
-            # while navigatorOK_state != True:
+            while navigatorOK_state != True:
                 # BAXTER SCREEN OUTPUT
-            image_pub.publish(msg_pickupObject)
+                image_pub.publish(msg_pickupObject)
 
             # Roslaunch stuff
-            # uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
-            # launch = roslaunch.parent.ROSLaunchParent(uuid, ["/home/thib/simulation_ws/src/object-recognition/launch/demo.launch"])
-            # launch.start()
-            # rospy.loginfo("Pickup object launchfile started")
+            uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+            launch = roslaunch.parent.ROSLaunchParent(uuid, ["/home/thib/simulation_ws/src/object-recognition/launch/demo.launch"])
+            launch.start()
+            rospy.loginfo("Pickup object launchfile started")
 
 
                 
         if (wheelIndex_value % 3) == 1 :
             # Debug terminal
             print "Assembly task"
-            desired_object = "assembly"
+            # desired_object = "enclosure"
+
             # BAXTER SCREEN OUTPUT
             image_pub.publish(msg_assemblyTask)
         
@@ -101,7 +102,6 @@ def poll_object_request():
             if desired_object == 'q':
                 print "EXIT requested"
                 image_pub.publish(msg_sleeping)
-                desired_object_pub.publish(desired_object)
                 leftInnerLight_pub.publish('left_inner_light', False)
                 rospy.sleep(1)
                 break
@@ -113,7 +113,6 @@ def poll_object_request():
                 desired_object_pub.publish(desired_object)
                 print "PROGRAM requested"
                 rospy.sleep(2)
-                break
 
         while is_moving:
             pass
