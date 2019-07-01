@@ -67,6 +67,19 @@ position: [0.6787864986392956, 1.5013836961428486, 0.23930100291012454, -0.99977
 
 /robot/limb/right/endpoint_state (Cartesian endpoint position)
 
+Position "goingHome" (after inspection OK)
+pose: 
+  position: 
+    x: 0.705456378694
+    y: -0.326429405544
+    z: 0.124974952427
+  orientation: 
+    x: 0.999795655712
+    y: 0.0157921196389
+    z: 0.00780419347532
+    w: 0.00991717399778
+
+
 Position for Assembly (present box to the operator to insert screws)
 /robot/limb/right/endpoint_state (Cartesian endpoint position)
 

@@ -46,7 +46,7 @@ class webcam_image:
 
     def callback(self,data):
         detectedScrewsFunction = 0
-        if not self.is_moving:
+        if not self.is_moving and self.analysis == False:
             try:
                 frame = self.bridge.imgmsg_to_cv2(data,"bgr8")
             except CvBridgeError as e:
@@ -69,11 +69,13 @@ class webcam_image:
 
                 detectedScrewsFunction = self.screwDetection(crop_img)
 
-                self.analysis = True
+                
 
                 # Publish baxter message and quit (or running again if missing screws)
                 # print "Analysis OK?: ", self.analysis
                 # print (self.screwDetection(crop_img))
+                if detectedScrewsFunction == 4:
+                    self.analysis = True
                 
 
             # self.screwDetection(crop_img)
@@ -85,6 +87,12 @@ class webcam_image:
 
             # self.screwDetection(frame)
             cv2.waitKey(3)
+
+            
+        
+        # else:
+            # pass # Stop reading video stream
+            # cv2.destroyAllWindows() # Close openCV windows
 
 
     def screwDetection(self, frame):
