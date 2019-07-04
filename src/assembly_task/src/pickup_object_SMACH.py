@@ -3,6 +3,7 @@ from grip_node import GripperClient
 
 import rospy
 import cv2
+import time
 from cv_bridge import CvBridge, CvBridgeError
 import image_geometry
 from std_msgs.msg import Bool
@@ -45,8 +46,17 @@ msg_errorRequest = CvBridge().cv2_to_imgmsg(img_errorRequest, encoding="bgr8")
 dinspection = [0.690, -0.018, 0.167, 0.353, 0.187, 0.781, -0.479]
 # dinspectionCamera = [0.529, 0.112, 0.155, 0.529, -0.472, 0.537, 0.457]
 
+exec_state = False
+
+
+
 # THIS WORKS
 
+def execCallback(data):
+    exec_state = data.data
+    print (exec_state)
+
+exec_assembly_sub = rospy.Subscriber("exec_assembly", Bool, execCallback)
 
 def initCamera(data):
     global camera_info
@@ -63,6 +73,7 @@ def getCameraState(data):
 def getDesiredObject(data):
     global desired_object
     desired_object = data.data
+    print (desired_object)
 
 # THIS WORKS
 
@@ -133,7 +144,7 @@ def pickup():
 
     dsafe = [xb, yb, zsafe, 0.99, 0.01, 0.01, 0.01]
     dsafe_rotated = [xb, yb, zsafe, object_orientation[3],
-                     object_orientation[2], object_orientation[1], object_orientation[0]]
+                    object_orientation[2], object_orientation[1], object_orientation[0]]
 
     # EDIT THIS LINE FOR PICK (IE GET THE BOX)
     dpick = [xb, yb, zpick, object_orientation[3], object_orientation[2], object_orientation[1], object_orientation[0]]
@@ -150,7 +161,7 @@ def pickup():
 
 
     camera_rotated = [camera_x, camera_y, camera_z, object_orientation[3],
-                      object_orientation[2], object_orientation[1], object_orientation[0]]
+                    object_orientation[2], object_orientation[1], object_orientation[0]]
     initial = [camera_x, camera_y, camera_z, 0.99, 0.01, 0.01, 0.01]
 
     # Publish that Baxter is about to move
@@ -191,7 +202,7 @@ def pickup():
 
     # Debug terminal
     print "I got the enclosure!"
-   
+
     pnode.initplannode(dsafe_rotated, "right")
     pnode.initplannode(initial, "right")
 
@@ -210,22 +221,22 @@ def pickup():
     # Wait
     rospy.sleep(1)
 
-    # inspection()
+    inspection()
     
     # Wait
-    # rospy.sleep(1)
+    rospy.sleep(1)
 
     # rospy.logwarn_throttle(1,"--- ISSUE AFTER SCREWING ---")
 
     # Go back home
-    # pnode.initplannode(dsafe_rotated, "right")
-    # pnode.initplannode(initial, "right")
+    pnode.initplannode(dsafe_rotated, "right")
+    pnode.initplannode(initial, "right")
 
     # Publish that Baxter has stopped moving
     is_moving_pub.publish(False)
     # Reset desired_object to None
     desired_object = None
-    
+
     return
 
 # THIS WORKS
@@ -266,34 +277,34 @@ def screwing():
     return
 
 # Action when object picked up
-# def inspection():
+def inspection():
     
-#     # BAXTER SCREEN OUTPUT
-#     # image_pub.publish(msg_confirm)
+    # BAXTER SCREEN OUTPUT
+    # image_pub.publish(msg_confirm)
     
-#     rospy.logwarn_throttle(1,"Getting ready for inspection!")
+    rospy.logwarn_throttle(1,"Getting ready for inspection!")
 
-#     pnode.initplannode(dinspection, "right")
-#     # pnode.initplannode(dinspectionCamera, "left")
+    pnode.initplannode(dinspection, "right")
+    # pnode.initplannode(dinspectionCamera, "left")
 
-#     rospy.logwarn_throttle(1,"Inspection in progress...")
+    rospy.logwarn_throttle(1,"Inspection in progress...")
 
-#     # CHANGE THIS
-#     while navigatorOK_state != True:    
-#         # BLINKING BUTTON LIGHT
-#         leftInnerLight_pub.publish('left_inner_light', True)
-#         rospy.sleep(0.5)
-#         leftInnerLight_pub.publish('left_inner_light', False)
-#         rospy.sleep(0.5)
+    # CHANGE THIS
+    while navigatorOK_state != True:    
+        # BLINKING BUTTON LIGHT
+        leftInnerLight_pub.publish('left_inner_light', True)
+        rospy.sleep(0.5)
+        leftInnerLight_pub.publish('left_inner_light', False)
+        rospy.sleep(0.5)
         
-#     print "Inspection completed!"
+    print "Inspection completed!"
     
-#     # BAXTER SCREEN OUTPUT
-#     # image_pub.publish(msg_enjoy)
+    # BAXTER SCREEN OUTPUT
+    # image_pub.publish(msg_enjoy)
 
-#     print "Going back home"
+    print "Going back home"
 
-#     return
+    return
 
 # THIS WORKS
 
@@ -316,43 +327,45 @@ def arm_setup():
 
 
 if __name__ == '__main__':
-    rospy.init_node('pickup_object', log_level=rospy.INFO)
+    rospy.init_node('pickup_object_SMACH', log_level=rospy.INFO)
 
-    print "Moving arm to correct location"
-    arm_setup()
+    if exec_state == True:
 
-    # ROS stuff
-    rospy.Subscriber("/cameras/right_hand_camera/camera_info", CameraInfo, initCamera)
-    rospy.Subscriber("/robot/limb/right/endpoint_state", EndpointState, getCameraState)
+        print "Moving arm to correct location"
+        arm_setup()
 
-    
+        # ROS stuff
+        rospy.Subscriber("/cameras/right_hand_camera/camera_info", CameraInfo, initCamera)
+        rospy.Subscriber("/robot/limb/right/endpoint_state", EndpointState, getCameraState)
 
-    rospy.Subscriber("/desired_object", String, getDesiredObject)
-    rospy.Subscriber("/object_location", ObjectInfo, getObjectLocation)
+        
 
-    rate = rospy.Rate(50)
-    while (camera_info is None) or (camera_state_info is None):
-        rate.sleep()
+        rospy.Subscriber("/desired_object", String, getDesiredObject)
+        rospy.Subscriber("/object_location", ObjectInfo, getObjectLocation)
 
-    image_pub = rospy.Publisher('/robot/xdisplay', Image, latch=True, queue_size=10)
-    is_moving_pub = rospy.Publisher("is_moving", Bool, queue_size=10)
+        rate = rospy.Rate(50)
+        while (camera_info is None) or (camera_state_info is None):
+            rate.sleep()
 
-    head_RedLed_pub = rospy.Publisher('/robot/sonar/head_sonar/lights/set_red_level', Float32, queue_size=1)
-    head_GreenLed_pub = rospy.Publisher('/robot/sonar/head_sonar/lights/set_green_level', Float32, queue_size=1)
+        image_pub = rospy.Publisher('/robot/xdisplay', Image, latch=True, queue_size=10)
+        is_moving_pub = rospy.Publisher("is_moving", Bool, queue_size=10)
 
-    leftInnerLight_pub = rospy.Publisher('/robot/digital_io/command', DigitalOutputCommand, queue_size=10)
-    # leftOuterLight_pub = rospy.Publisher('/robot/digital_io/command', DigitalOutputCommand, queue_size=10)
+        head_RedLed_pub = rospy.Publisher('/robot/sonar/head_sonar/lights/set_red_level', Float32, queue_size=1)
+        head_GreenLed_pub = rospy.Publisher('/robot/sonar/head_sonar/lights/set_green_level', Float32, queue_size=1)
 
-    object_location_pub = rospy.Publisher("object_location",ObjectInfo,queue_size=10)
+        leftInnerLight_pub = rospy.Publisher('/robot/digital_io/command', DigitalOutputCommand, queue_size=10)
+        # leftOuterLight_pub = rospy.Publisher('/robot/digital_io/command', DigitalOutputCommand, queue_size=10)
 
-    # Buttons subscribers
-    rospy.Subscriber("/robot/digital_io/left_lower_button/state", DigitalIOState, buttonOKPress)
-    rospy.Subscriber("/robot/navigators/left_navigator/state", NavigatorState, navigatorCallback)
+        object_location_pub = rospy.Publisher("object_location",ObjectInfo,queue_size=10)
 
-    is_moving_pub.publish(False)
+        # Buttons subscribers
+        rospy.Subscriber("/robot/digital_io/left_lower_button/state", DigitalIOState, buttonOKPress)
+        rospy.Subscriber("/robot/navigators/left_navigator/state", NavigatorState, navigatorCallback)
+
+        is_moving_pub.publish(False)
 
 
-    # Debug terminal
-    print "Ready to go!"
+        # Debug terminal
+        print "Ready to go!"
 
-    rospy.spin()
+        rospy.spin()

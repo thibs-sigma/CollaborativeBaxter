@@ -10,35 +10,17 @@ from cv_bridge import CvBridge
 
 is_moving = False
 
-img_waiting = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/waiting.png')
+img_waiting = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/waiting.png')
 msg_waiting = CvBridge().cv2_to_imgmsg(img_waiting, encoding="bgr8")
 
-img_sleeping = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/sleeping.png')
+img_sleeping = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/sleeping.png')
 msg_sleeping = CvBridge().cv2_to_imgmsg(img_sleeping, encoding="bgr8")
 
-img_assemblyTask = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/assembly_task.png')
+img_assemblyTask = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/start_assemblyTask.png')
 msg_assemblyTask = CvBridge().cv2_to_imgmsg(img_assemblyTask, encoding="bgr8")
 
-img_inspectionTask = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/inspection_task.png')
-msg_inspectionTask = CvBridge().cv2_to_imgmsg(img_inspectionTask, encoding="bgr8")
-
-img_pickupObject = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/pickup_object.png')
-msg_pickupObject = CvBridge().cv2_to_imgmsg(img_pickupObject, encoding="bgr8")
-
-img_tuckArms = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/tuck_arms.png')
-msg_tuckArms = CvBridge().cv2_to_imgmsg(img_tuckArms, encoding="bgr8")
-
-img_untuckArms = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/untuck_arms.png')
-msg_untuckArms = CvBridge().cv2_to_imgmsg(img_untuckArms, encoding="bgr8")
-
-img_exit = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/exit.png')
+img_exit = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/exit.png')
 msg_exit = CvBridge().cv2_to_imgmsg(img_exit, encoding="bgr8")
-
-img_tuckingArms = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/tucking_arms.png')
-msg_tuckingArms = CvBridge().cv2_to_imgmsg(img_tuckingArms, encoding="bgr8")
-
-img_untuckingArms = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/untucking_arms.png')
-msg_untuckingArms = CvBridge().cv2_to_imgmsg(img_untuckingArms, encoding="bgr8")
 
 def check_moving(data):
     global is_moving
@@ -74,35 +56,14 @@ def poll_object_request():
         # Debug terminal 
         # print wheelIndex_value % 3
            
-        if (wheelIndex_value % 5) == 1 :
+        if (wheelIndex_value % 2) == 0 :
             # Debug terminal
-            # print "Untuck arms"
-            desired_object = "untuck"
-            # BAXTER SCREEN OUTPUT
-            image_pub.publish(msg_untuckArms)
-        
-        elif (wheelIndex_value % 5) == 2 :
-            # Debug terminal
-            # print "Assembly task"
-            desired_object = "assembly"
+            print "Object : Enclosure"
+            desired_object = "enclosure"
             # BAXTER SCREEN OUTPUT
             image_pub.publish(msg_assemblyTask)
-
-        elif (wheelIndex_value % 5) == 3 :
-            # Debug terminal
-            # print "Pickup task"
-            desired_object = "pickup"
-            # BAXTER SCREEN OUTPUT
-            image_pub.publish(msg_pickupObject)
-
-        if (wheelIndex_value % 5) == 0 :
-            # Debug terminal
-            # print "Tuck arms"
-            desired_object = "tuck"
-            # BAXTER SCREEN OUTPUT
-            image_pub.publish(msg_tuckArms)
         
-        elif (wheelIndex_value % 5) == 4 :
+        elif (wheelIndex_value % 2) == 1 :
             # Debug terminal
             # print "EXIT!"
             desired_object = "q"
@@ -123,26 +84,6 @@ def poll_object_request():
                 rospy.sleep(1)
                 break
             
-            elif desired_object == 'tuck':
-                # Debug terminal
-                # print "Finding and picking up ",desired_object
-                # Switch off button light
-                image_pub.publish(msg_tuckingArms)
-                desired_object_pub.publish(desired_object)
-                leftInnerLight_pub.publish('left_inner_light', False)
-                rospy.sleep(1)
-                break
-
-            elif desired_object == 'untuck':
-                # Debug terminal
-                # print "Finding and picking up ",desired_object
-                # Switch off button light
-                image_pub.publish(msg_untuckingArms)
-                desired_object_pub.publish(desired_object)
-                leftInnerLight_pub.publish('left_inner_light', False)
-                rospy.sleep(1)
-                break          
-
             else:
                 # Debug terminal
                 # print "Finding and picking up ",desired_object

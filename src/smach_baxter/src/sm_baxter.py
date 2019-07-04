@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 import os
 
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
+
+from cv_bridge import CvBridge
+from cv2 import imread
+from sensor_msgs.msg import Image
 
 import numpy as np
 from numpy import linalg as LA
@@ -39,6 +43,9 @@ for name in MoveItErrorCodes.__dict__.keys():
 # Import scripts
 # import request_action
 
+img_untuckingArms = imread('/home/thib/simulation_ws/src/launch_demo/msg/untucking_arms.png')
+msg_untuckingArms = CvBridge().cv2_to_imgmsg(img_untuckingArms, encoding="bgr8")
+
 
 class RESET(State):
     def __init__(self):
@@ -49,7 +56,7 @@ class RESET(State):
         print(rospy.get_name())
 
         # self.state = 0
-        # rospy.sleep(1)
+        rospy.sleep(2)
         # self.check_states()
   
 
@@ -60,7 +67,7 @@ class CHOOSEACTION(State):
 
 
     def __init__(self):
-        State.__init__(self, outcomes=['success', 'stop'])
+        State.__init__(self, outcomes=['assemblyRequest', 'pickupRequest', 'tuckRequest', 'untuckRequest', 'stop'])
         
         # Subscribers
         rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
@@ -72,25 +79,133 @@ class CHOOSEACTION(State):
 
     def execute(self, userdata):
         print("Inside CHOOSEACTION state machine\n")
-        pwd = os.getcwd()
-        os.system(pwd + "/src/launch_demo/src/request_action.py")
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/launch_demo/src/request_action.py")
+        os.system("/home/thib/simulation_ws/src/launch_demo/src/request_action.py")
+        # rospy.sleep(2)
         # rospy.loginfo("State machine initialized!")
         print(self.actionRequested_str)
         rospy.sleep(1)
         if self.actionRequested_str == 'q':
+            print ('Stop requested')
             return 'stop'
         elif self.actionRequested_str == 'assembly':
-            print ('callback assembly, stateMachine to be completed')
-            return 'success'
+            print ('Assembly requested')
+            return 'assemblyRequest'
+        elif self.actionRequested_str == 'pickup':
+            print ('Pickup requested')
+            return 'pickupRequest'
+        elif self.actionRequested_str == 'tuck':
+            print ('Tuck requested')
+            return 'tuckRequest'
+        elif self.actionRequested_str == 'untuck':
+            print ('Untuck requested')
+            return 'untuckRequest'
 
-class PICKUPOBJECT(State):
+class TUCK(State):
 
 
     def __init__(self):
-        State.__init__(self, outcomes=['success', 'fail'])
+        State.__init__(self, outcomes=['success', 'stop'])
+        
+    def execute(self, userdata):
+        print("Inside TUCK state machine\n")
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/baxter/baxter_tools/scripts/tuck_arms.py -t")
+        os.system("/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py -t")
+        # rospy.sleep(1)
+        return 'success'
+
+class UNTUCK(State):
+
+
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'stop'])
+        
+    def execute(self, userdata):
+        print("Inside UNTUCK state machine\n")
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/baxter/baxter_tools/scripts/tuck_arms.py -u")
+        os.system("/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py -u")
+        image_pub.publish(msg_untuckingArms)
+        rospy.sleep(1)
+        return 'success'
+
+# ASSEMBLY TASK
+class MENUASSEMBLY(State):
+
+
+    def __init__(self):
+        State.__init__(self, outcomes=['requestOK', 'stop'])
         
         # Subscribers
         rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
+        
+
+    def actionRequestedCallback(self, data):
+        self.actionRequested_str = data.data
+    #     print (self.actionRequested_str)
+        # return str(actionRequested_str)
+
+    def execute(self, userdata):
+        print("Inside MENUASSEMBLY state machine\n")
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/launch_demo/src/request_action.py")
+        # os.system("/home/thib/simulation_ws/src/smach_baxter/src/request_object_SMACH.py")
+        os.system("/home/thib/simulation_ws/src/assembly_task/src/request_object.py")
+        # rospy.sleep(2)
+        # rospy.loginfo("State machine initialized!")
+        # print(self.actionRequested_str)
+        # rospy.sleep(1)
+        if self.actionRequested_str == 'q':
+            return 'stop'
+        elif self.actionRequested_str == 'enclosure':
+            return 'requestOK'
+
+class OBJECTPREDICTION(State):
+
+    def __init__(self):
+        State.__init__(self, outcomes=['predictionOK', 'stop'])
+        
+        # Subscribers
+        # rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
+
+        # self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
+        # self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
+
+    # def actionRequestedCallback(self, data):
+    #     self.actionRequested_str = data.data
+        # print (self.actionRequested_str)
+        # return str(actionRequested_str)
+
+    def execute(self, userdata):
+        print("Inside OBJECTPREDICTION state machine\n")
+        
+        rospy.sleep(1)
+        # self.exec_assembly_pub.publish(True)
+        # self.desired_object_pub.publish("enclosure")
+
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/assembly_task/src/request_action.py")
+        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
+        os.system("/home/thib/simulation_ws/src/assembly_task/src/baxter_object_prediction.py")
+        # print(self.actionRequested_str)
+        # rospy.sleep(1)
+
+        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        return 'predictionOK'
+
+class ASSEMBLY(State):
+
+
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'stop'])
+        
+        # Subscribers
+        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
+
+        self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
+        self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
 
     def actionRequestedCallback(self, data):
         self.actionRequested_str = data.data
@@ -98,20 +213,191 @@ class PICKUPOBJECT(State):
         # return str(actionRequested_str)
 
     def execute(self, userdata):
-        print("Inside PICKUPOBJECT state machine\n")
-        pwd = os.getcwd()
-        os.system(pwd + "/src/launch_demo/src/request_action.py")
-        # rospy.loginfo("State machine initialized!")
-        print(self.actionRequested_str)
+        print("Inside ASSEMBLY state machine\n")
+        
         rospy.sleep(1)
-        if self.actionRequested_str == 'q':
-            return 'success'
-        elif self.actionRequested_str == 'assembly':
-            print ('callback assembly, stateMachine to be completed')
-            return 'fail'
+        self.exec_assembly_pub.publish(True)
+        self.desired_object_pub.publish("enclosure")
 
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/assembly_task/src/request_action.py")
+        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
+        os.system("/home/thib/simulation_ws/src/assembly_task/src/pickup_object.py")
+        # print(self.actionRequested_str)
+        # rospy.sleep(1)
+
+        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        return 'success'
+
+# PICKUP TASK
+class MENUPICKUP(State):
+
+
+    def __init__(self):
+        State.__init__(self, outcomes=['requestOK', 'stop'])
+        
+        # Subscribers
+        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
+        
+
+    def actionRequestedCallback(self, data):
+        self.actionRequested_str = data.data
+    #     print (self.actionRequested_str)
+        # return str(actionRequested_str)
+
+    def execute(self, userdata):
+        print("Inside MENUPICKUP state machine\n")
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/launch_demo/src/request_action.py")
+        # os.system("/home/thib/simulation_ws/src/smach_baxter/src/request_object_SMACH.py")
+        os.system("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/request_object.py")
+        # rospy.sleep(2)
+        # rospy.loginfo("State machine initialized!")
+        # print(self.actionRequested_str)
+        # rospy.sleep(1)
+        if self.actionRequested_str == 'q':
+            return 'stop'
+        else:
+            return 'requestOK'
+
+class PICKUPOBJECTPREDICTION(State):
+
+    def __init__(self):
+        State.__init__(self, outcomes=['predictionOK', 'stop'])
+        
+        # Subscribers
+        # rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
+
+        # self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
+        # self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
+
+    # def actionRequestedCallback(self, data):
+    #     self.actionRequested_str = data.data
+        # print (self.actionRequested_str)
+        # return str(actionRequested_str)
+
+    def execute(self, userdata):
+        print("Inside OBJECTPREDICTION state machine\n")
+        
+        rospy.sleep(1)
+        # self.exec_assembly_pub.publish(True)
+        # self.desired_object_pub.publish("enclosure")
+
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/assembly_task/src/request_action.py")
+        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
+        os.system("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
+        # print(self.actionRequested_str)
+        # rospy.sleep(1)
+
+        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        return 'predictionOK'
+
+class PICKUP(State):
+
+
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'stop'])
+        
+        # Subscribers
+        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
+
+        self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
+        self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
+
+    def actionRequestedCallback(self, data):
+        self.actionRequested_str = data.data
+        # print (self.actionRequested_str)
+        # return str(actionRequested_str)
+
+    def execute(self, userdata):
+        print("Inside ASSEMBLY state machine\n")
+        
+        rospy.sleep(1)
+        self.exec_assembly_pub.publish(True)
+        self.desired_object_pub.publish("enclosure")
+
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/assembly_task/src/request_action.py")
+        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
+        os.system("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/pickup_object.py")
+        # print(self.actionRequested_str)
+        # rospy.sleep(1)
+
+        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        return 'success'
+
+# INSPECTION TASK
+class INSPECTIONPREDICTION(State):
+
+    def __init__(self):
+        State.__init__(self, outcomes=['predictionOK', 'stop'])
+        
+        # Subscribers
+        # rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
+
+        # self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
+        # self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
+
+    # def actionRequestedCallback(self, data):
+    #     self.actionRequested_str = data.data
+        # print (self.actionRequested_str)
+        # return str(actionRequested_str)
+
+    def execute(self, userdata):
+        print("Inside INSPECTIONPREDICTION state machine\n")
+        
+        rospy.sleep(1)
+        # self.exec_assembly_pub.publish(True)
+        # self.desired_object_pub.publish("enclosure")
+
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/assembly_task/src/request_action.py")
+        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
+        os.system("/home/thib/simulation_ws/src/inspection_task/src/baxter_screws_prediction.py")
+        # print(self.actionRequested_str)
+        # rospy.sleep(1)
+
+        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        return 'predictionOK'
+
+class INSPECTION(State):
+
+
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'stop'])
+        
+        # Subscribers
+        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
+
+        self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
+        self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
+
+    def actionRequestedCallback(self, data):
+        self.actionRequested_str = data.data
+        # print (self.actionRequested_str)
+        # return str(actionRequested_str)
+
+    def execute(self, userdata):
+        print("Inside INSPECTION state machine\n")
+        
+        rospy.sleep(1)
+        self.exec_assembly_pub.publish(True)
+        self.desired_object_pub.publish("enclosure")
+
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/assembly_task/src/request_action.py")
+        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
+        os.system("/home/thib/simulation_ws/src/inspection_task/src/inspection.py")
+        # print(self.actionRequested_str)
+        # rospy.sleep(1)
+
+        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        return 'success'
 
 if __name__ == "__main__":
+
+    image_pub = rospy.Publisher('/robot/xdisplay', Image, latch=True, queue_size=10)
 
     try:
         rospy.init_node('baxter_SMACH')
@@ -123,9 +409,41 @@ if __name__ == "__main__":
         # Open the container (HERE IS DEFINED THE SM)
         with sm:
             # Reset the Baxter
-            StateMachine.add('RESET', RESET(), transitions={'success':'CHOOSE_ACTION'})
-            StateMachine.add('CHOOSE_ACTION', CHOOSEACTION(), transitions={'success':'PICKUP_OBJECT', 'stop':'stop'})
-            StateMachine.add('PICKUP_OBJECT', PICKUPOBJECT(), transitions={'success':'success', 'fail':'fail'})
+            StateMachine.add('RESET', RESET(), transitions={'success':'UNTUCK'})
+            StateMachine.add('CHOOSE_ACTION', CHOOSEACTION(), transitions={'assemblyRequest':'ASSEMBLY_ACTION', 'pickupRequest':'PICKUP_ACTION', 'tuckRequest':'TUCK', 'untuckRequest':'UNTUCK', 'stop':'stop'})
+            StateMachine.add('TUCK', TUCK(), transitions={'success':'CHOOSE_ACTION', 'stop':'stop'})
+            StateMachine.add('UNTUCK', UNTUCK(), transitions={'success':'CHOOSE_ACTION', 'stop':'stop'})
+
+            # Sub state machine ASSEMBLY
+            # Concurrence allow to execute two parallel states
+            # ASSEMBLY TASK
+            sm_assembly = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'OBJECT_PREDICTION':'predictionOK', 'ASSEMBLY':'success', 'MENU_ASSEMBLY':'requestOK'}})
+
+            with sm_assembly:
+                Concurrence.add('MENU_ASSEMBLY', MENUASSEMBLY())
+                Concurrence.add('OBJECT_PREDICTION', OBJECTPREDICTION())
+                Concurrence.add('ASSEMBLY', ASSEMBLY())
+                
+            StateMachine.add('ASSEMBLY_ACTION', sm_assembly, transitions={'success':'INSPECTION_ACTION', 'fail':'stop'})
+
+            # PICKUP TASK
+            sm_pickup = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'PICKUPOBJECT_PREDICTION':'predictionOK', 'PICKUP':'success', 'MENU_PICKUP':'requestOK'}})
+
+            with sm_pickup:
+                Concurrence.add('MENU_PICKUP', MENUPICKUP())
+                Concurrence.add('PICKUPOBJECT_PREDICTION', PICKUPOBJECTPREDICTION())
+                Concurrence.add('PICKUP', PICKUP())
+                
+            StateMachine.add('PICKUP_ACTION', sm_pickup, transitions={'success':'success', 'fail':'stop'})     
+
+            # INSPECTION TASK
+            sm_inspection = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'INSPECTION_PREDICTION':'predictionOK', 'INSPECTION':'success'}})
+
+            with sm_inspection:
+                Concurrence.add('INSPECTION_PREDICTION', INSPECTIONPREDICTION())
+                Concurrence.add('INSPECTION', INSPECTION())
+                
+            StateMachine.add('INSPECTION_ACTION', sm_inspection, transitions={'success':'success', 'fail':'stop'})           
         
         # Attach a SMACH introspection server
         sis = IntrospectionServer('baxter_SMACH_introspection', sm, '/BAXTER_DEMO')
@@ -138,11 +456,16 @@ if __name__ == "__main__":
         smach_thread = threading.Thread(target = sm.execute)
         smach_thread.start()
 
+        
+
+
 
     
     except rospy.ROSInterruptException:
         pass
-
-
+    
     # Signal handler (wait for CTRL+C)
     rospy.spin()
+
+
+
