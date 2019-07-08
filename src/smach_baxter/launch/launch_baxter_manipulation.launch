@@ -1,6 +1,7 @@
 <launch>
 
     <!-- ROS PARAMETERS  -->
+    <param name="smach_view" type="bool" value="true" />
 
     <!-- Position right arm -->
     <param name="right_e0" value="0.6787864986392956"/>
@@ -33,6 +34,10 @@
 
     <!-- Upper-level state machine -->
     <node pkg="smach_baxter" type="sm_baxter.py" name="logic_state_machine" output="screen"/>
+    
+    <group if="$(arg smach_view)">
+        <node pkg="smach_viewer" type="smach_viewer.py" name="state_machine_viewer" output="screen"/>
+    </group>
 
     <!-- Launch Baxter's cameras -->
     <node name="camera_control_right" pkg="baxter_tools" type="camera_control.py" args="-o right_hand_camera -r 640x400"/>

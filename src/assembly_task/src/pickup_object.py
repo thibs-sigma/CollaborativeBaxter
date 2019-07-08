@@ -208,7 +208,11 @@ def pickup():
     screwing()
 
     # Wait
-    rospy.sleep(1)
+    # rospy.sleep(1)
+
+    # Tell pickup ok
+
+
 
     # inspection()
     
@@ -225,7 +229,10 @@ def pickup():
     is_moving_pub.publish(False)
     # Reset desired_object to None
     desired_object = None
-    
+
+    if screwing() == True:
+        rospy.signal_shutdown("Assembly OK")
+        rospy.on_shutdown(cv2.destroyAllWindows())
     return
 
 # THIS WORKS
@@ -263,7 +270,7 @@ def screwing():
     image_pub.publish(msg_screwingCompleted)
 
 
-    return
+    return True
 
 # Action when object picked up
 # def inspection():
@@ -316,7 +323,7 @@ def arm_setup():
 
 
 if __name__ == '__main__':
-    rospy.init_node('pickup_object', log_level=rospy.INFO)
+    rospy.init_node('pickup_enclosure', log_level=rospy.INFO)
 
     print "Moving arm to correct location"
     arm_setup()
@@ -335,7 +342,7 @@ if __name__ == '__main__':
         rate.sleep()
 
     image_pub = rospy.Publisher('/robot/xdisplay', Image, latch=True, queue_size=10)
-    is_moving_pub = rospy.Publisher("is_moving", Bool, queue_size=10)
+    is_moving_pub = rospy.Publisher("/is_moving", Bool, queue_size=10)
 
     head_RedLed_pub = rospy.Publisher('/robot/sonar/head_sonar/lights/set_red_level', Float32, queue_size=1)
     head_GreenLed_pub = rospy.Publisher('/robot/sonar/head_sonar/lights/set_green_level', Float32, queue_size=1)
@@ -343,7 +350,7 @@ if __name__ == '__main__':
     leftInnerLight_pub = rospy.Publisher('/robot/digital_io/command', DigitalOutputCommand, queue_size=10)
     # leftOuterLight_pub = rospy.Publisher('/robot/digital_io/command', DigitalOutputCommand, queue_size=10)
 
-    object_location_pub = rospy.Publisher("object_location",ObjectInfo,queue_size=10)
+    object_location_pub = rospy.Publisher("/object_location",ObjectInfo,queue_size=10)
 
     # Buttons subscribers
     rospy.Subscriber("/robot/digital_io/left_lower_button/state", DigitalIOState, buttonOKPress)
@@ -354,5 +361,6 @@ if __name__ == '__main__':
 
     # Debug terminal
     print "Ready to go!"
+
 
     rospy.spin()

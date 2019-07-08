@@ -216,13 +216,17 @@ def pickup():
     # gc.command(position=100.0, effort=50.0)
     # gc.wait()
 
-    pnode.initplannode(dsafe_rotated, "left")
-    pnode.initplannode(initial, "left")
+    # pnode.initplannode(dsafe_rotated, "left")
+    # pnode.initplannode(initial, "left")
 
     # Publish that Baxter has stopped moving
     is_moving_pub.publish(False)
     # Reset desired_object to None
     desired_object = None
+
+    # rospy.sleep(1)
+
+    rospy.signal_shutdown("Pickup OK")
 
     return
 
@@ -318,7 +322,7 @@ if __name__ == '__main__':
     leftInnerLight_pub = rospy.Publisher('/robot/digital_io/command', DigitalOutputCommand, queue_size=10)
     # leftOuterLight_pub = rospy.Publisher('/robot/digital_io/command', DigitalOutputCommand, queue_size=10)
 
-    object_location_pub = rospy.Publisher("object_location",ObjectInfo,queue_size=10)
+    object_location_pub = rospy.Publisher("/object_location",ObjectInfo,queue_size=10)
 
     # Buttons subscribers
     rospy.Subscriber("/robot/digital_io/left_lower_button/state", DigitalIOState, buttonOKPress)

@@ -35,17 +35,14 @@ position: [-0.44830588525951215, 1.8465293734170667, -0.004601942363656241, -1.0
   <node name="camera_control" pkg="baxter_tools" type="camera_control.py"
     args="-o left_hand_camera -r 640x400"/>
 
-  <!-- Gripper Argument -->
-  <!-- might need to change this to left -->
-  <arg name="gripper" default="left" />
-
   <!-- Start the Gripper Action Server -->
-  <node name="rsdk_gripper_action_server" pkg="baxter_interface" type="gripper_action_server.py" args="--gripper $(arg gripper)" required="true" />
+  <node name="rsdk_left_gripper_action_server" pkg="baxter_interface" type="gripper_action_server.py" args="--gripper left" required="true" />
+  <node name="rsdk_right_gripper_action_server" pkg="baxter_interface" type="gripper_action_server.py" args="--gripper right" required="true" />
 
   <node pkg="baxter_interface" type="joint_trajectory_action_server.py" name="joint_traj_action_srv" output="screen" respawn="false" />
 
   <!-- up to date -->
-  <node pkg="inspection_task" type="baxter_screws_prediction.py" name="baxter_screws_prediction" output="screen" respawn="true"/>
+  <node pkg="inspection_task" type="baxter_screws_prediction.py" name="baxter_screws_prediction" output="screen" respawn="false"/>
 
   <!-- need to modify this somehow -->
   <!-- <node pkg="inspection_task" type="pickup_object.py" name="pickup_object" output="screen" respawn="true" launch-prefix="xterm -e "/> -->

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from grip_node import GripperClient
+from grip_node_left import GripperClient as GripperClientLeft
+from grip_node_right import GripperClient as GripperClientRight
 
 import rospy
 import cv2
@@ -53,7 +54,13 @@ dinspection = [0.690, -0.018, 0.167, 0.353, 0.187, 0.781, -0.479]
 dinspectionCamera = [0.666, -0.023, 0.188, 0.790, 0.464, -0.351, 0.191]
 dplace = [0.880, -0.170, 0.221, 0.390, 0.118, 0.848, -0.338]
 dhome = [0.705, -0.327, 0.125, 0.999, 0.016, 0.008, 0.010]
+dleftneutral = [0.580, 0.180, 0.099, 0.141, 0.990, 0.007, 0.022]
+
 # Pre-recorded, can be adjusted by operator
+
+zplaceback = -0.150 # CHANGE HEIGHT FOR PICKING UP
+
+dplaceback = [0.705, -0.327, zplaceback+0.025, 0.999, 0.016, 0.008, 0.010]
 
 # THIS WORKS
 
@@ -86,8 +93,8 @@ def screwsDetectedCallback(data):
 # Action when object picked up
 def inspection():
     screwsDetectedMem = UInt32(0)
-    
-    gc = GripperClient()
+    readyForInspection_pub.publish(False)
+    gcleft = GripperClientLeft()
 
     # BAXTER SCREEN OUTPUT
     # image_pub.publish(msg_confirm)
@@ -107,12 +114,13 @@ def inspection():
 
     pnodeLeft.initplannode(dinspectionCamera, "left")
 
-    gc.command(position=0.0, effort=0.0) # Close gripper
-    gc.wait()
+    gcleft.command(position=0.0, effort=0.0) # Close gripper
+    gcleft.wait()
 
     rospy.logwarn_throttle(1,"Inspection in progress...")
-    
 
+    # Say everything is ok, start OpenCV inspection    
+    readyForInspection_pub.publish(True)
 
     # CHANGE THIS
     # while navigatorOK_state != True:    
@@ -146,7 +154,10 @@ def inspection():
         # Call function
         goingHome()
 
+        rospy.signal_shutdown("End inspection") 
+
     else:
+        readyForInspection_pub.publish(False)
         print ("Missing " + str(4 - screwsDetected) + " screw(s)! Inspection to be done again...")
         
         # Wait
@@ -168,6 +179,8 @@ def inspection():
 def goingHome():
     print ("Inside goingHome function")
 
+    gcright = GripperClientRight()
+
     # Debug terminal
     print "Everything fine! Going home (and then placing bax the box on the table)"
 
@@ -177,16 +190,43 @@ def goingHome():
     # Wait
     rospy.sleep(1)
 
-    # Going home (better: going to PlaceBack script...)
-    # pnodeRight.initplannode(dhome, "right")
-    # Move the left arm as well (otherwise, collision)
+
+
+    # Move the left arm first (otherwise, collision)
+    pnodeLeft.initplannode(dleftneutral, "left")
+
+    print ("Placing back the box... TO DO")
+    
+    # Wait
+    rospy.sleep(1)
+
+    # Going home
+    pnodeRight.initplannode(dhome, "right")
+
+    # Wait
+    rospy.sleep(1)
+
+    pnodeRight.initplannode(dplaceback, "right")
+
+    # Wait
+    rospy.sleep(1)
+
+    print ("Opening RIGHT gripper")
+    gcright.command(position=100.0, effort=50.0) # Open gripper
+    gcright.wait()
+    print ("RIGHT gripper should be open now")
+
+
+    # Going home
+    pnodeRight.initplannode(dhome, "right")
 
     # Wait
     rospy.sleep(1)
 
     # Debug terminal
-    print ("I'm back to home position")
-    print ("Placing back the box... TO DO")
+    print ("I'm back to home position. Terminating...")
+
+   
 
     return
 
@@ -241,25 +281,10 @@ def screwing():
 
     return
 
-def arm_setup():
-    # Get desired joint values from parameter server
-    left_w0 = rospy.get_param('left_w0', default=0)
-    left_w1 = rospy.get_param('left_w1', default=0)
-    left_w2 = rospy.get_param('left_w2', default=0)
-    left_e0 = rospy.get_param('left_e0', default=0)
-    left_e1 = rospy.get_param('left_e1', default=0)
-    left_s0 = rospy.get_param('left_s0', default=0)
-    left_s1 = rospy.get_param('left_s1', default=0)
-
-    # Send the left arm to the desired position
-    home = {'left_w0': left_w0, 'left_w1': left_w1, 'left_w2': left_w2,
-            'left_e0': left_e0, 'left_e1': left_e1, 'left_s0': left_s0, 'left_s1': left_s1}
-    limb = baxter_interface.Limb('left')
-    limb.move_to_joint_positions(home)
-
-
 if __name__ == '__main__':
     rospy.init_node('inspection', log_level=rospy.INFO)
+
+    
 
     print "Moving arm to correct location"
     # arm_setup()
@@ -286,6 +311,8 @@ if __name__ == '__main__':
     # object_location_pub = rospy.Publisher("object_location",ObjectInfo,queue_size=10)
 
     screwsDetected_pub = rospy.Publisher('/screwsDetected', UInt32, latch=True, queue_size=10) 
+
+    readyForInspection_pub = rospy.Publisher('/inspectionReady', Bool, queue_size=10)
 
     # Buttons subscribers
     # rospy.Subscriber("/robot/digital_io/left_lower_button/state", DigitalIOState, buttonOKPress)

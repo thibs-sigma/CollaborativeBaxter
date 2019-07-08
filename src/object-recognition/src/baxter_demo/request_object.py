@@ -89,7 +89,7 @@ def poll_object_request():
                 image_pub.publish(msg_sleeping)
                 leftInnerLight_pub.publish('left_inner_light', False)
                 rospy.sleep(1)
-                break
+                break # End loop, so end program (SMACH logic)
             else:
                 # Debug terminal
                 # print "Finding and picking up ",desired_object
@@ -97,6 +97,7 @@ def poll_object_request():
                 leftInnerLight_pub.publish('left_inner_light', False)
                 desired_object_pub.publish(desired_object)
                 rospy.sleep(2)
+                break # End loop, so end program (SMACH logic)
 
         while is_moving:
             pass
@@ -107,9 +108,9 @@ if __name__ == '__main__':
     rospy.init_node('request_object', log_level=rospy.INFO)
 
     rate = rospy.Rate(100)
-    desired_object_pub = rospy.Publisher("desired_object",String,queue_size=10)
+    desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
 
-    rospy.Subscriber("is_moving",Bool,check_moving)
+    rospy.Subscriber("/is_moving",Bool,check_moving)
     image_pub = rospy.Publisher('/robot/xdisplay', Image, latch=True, queue_size=10)
 
     head_RedLed_pub = rospy.Publisher('/robot/sonar/head_sonar/lights/set_red_level', Float32, queue_size=1)

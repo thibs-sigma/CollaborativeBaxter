@@ -21,10 +21,11 @@ class webcam_image:
         # baxter camera Subscriber
         self.image_sub = rospy.Subscriber("/cameras/left_hand_camera/image",Image,self.callback)
         # Subscriber to determine whether or not to use vision
-        self.is_moving_sub = rospy.Subscriber("is_moving",Bool,self.check_moving)
+        self.is_moving_sub = rospy.Subscriber("/is_moving",Bool,self.check_moving)
         # Publisher
         # self.object_location_pub = rospy.Publisher("object_location",ObjectInfo,queue_size=10)
 
+        self.is_ready_sub = rospy.Subscriber("/inspectionReady", Bool, self.check_inspectionReady)
 
         # self.object_info = ObjectInfo()
         # self.object_info.names = ['','','']
@@ -32,6 +33,7 @@ class webcam_image:
         # self.object_info.y = [0,0,0]
         # self.object_info.theta = [0,0,0]
         self.is_moving = False
+        self.is_ready = False
 
         self.directory = '/home/thib/simulation_ws/src/inspection_task/src'
         print "DIRECTORY IS: ",self.directory
@@ -43,6 +45,9 @@ class webcam_image:
 
     def check_moving(self,data):
         self.is_moving = data.data
+
+    def check_inspectionReady(self,data):
+        self.is_ready = data.data
 
     def callback(self,data):
         detectedScrewsFunction = 0
@@ -58,15 +63,18 @@ class webcam_image:
             crop_img = frame[57:368, 85:584] # Use numpy slicing to crop the input image (no more background issues)
             cv2.imshow('crop img (video)',crop_img) 
 
-            
-            if cv2.waitKey(1) & 0xFF == ord('c'):
+            # Wait for analysis 
+
+            # if cv2.waitKey(1) & 0xFF == ord('c'):
+            if cv2.waitKey(1) & self.is_ready == True:
             # if self.analysis == False:
+
                 image_path = self.directory + '/' + str("capture_inspection") + '.png'
                 rospy.sleep(1)
                 cv2.imwrite(image_path, crop_img)
                 # print "Capturing image",image_path
 
-
+                rospy.sleep(1)
                 detectedScrewsFunction = self.screwDetection(crop_img)
 
                 
@@ -76,6 +84,7 @@ class webcam_image:
                 # print (self.screwDetection(crop_img))
                 if detectedScrewsFunction == 4:
                     self.analysis = True
+
                 
 
             # self.screwDetection(crop_img)
@@ -90,9 +99,12 @@ class webcam_image:
 
             
         
-        # else:
+        else:
+            rospy.signal_shutdown("Inspection OK")
+            cv2.destroyAllWindows() # Close openCV windows
+            return
             # pass # Stop reading video stream
-            # cv2.destroyAllWindows() # Close openCV windows
+            
 
 
     def screwDetection(self, frame):
@@ -221,7 +233,9 @@ class webcam_image:
             return intNbScrews
 
 
-
+def clean_shutdown():
+    """Handles ROS shutdown (Ctrl-C) safely."""
+    rospy.logwarn('Aborting: Shutting down safely...')
 
 def main(args):
     rospy.init_node('webcam_image', anonymous=True)
@@ -231,6 +245,8 @@ def main(args):
         rospy.spin()
     except KeyboardInterrupt:
         print("Shutting down")
+
+    rospy.on_shutdown(clean_shutdown)
     cv2.destroyAllWindows()
 
 

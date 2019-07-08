@@ -14,14 +14,15 @@ from object_recognition.msg import ObjectInfo
 
 class webcam_image:
     def __init__(self):
+        self._done = False
         self.rate = rospy.Rate(10)
         self.bridge = CvBridge()
         # baxter camera Subscriber
         self.image_sub = rospy.Subscriber("/cameras/right_hand_camera/image",Image,self.callback)
         # Subscriber to determine whether or not to use vision
-        self.is_moving_sub = rospy.Subscriber("is_moving",Bool,self.check_moving)
+        self.is_moving_sub = rospy.Subscriber("/is_moving",Bool,self.check_moving)
         # Publisher
-        self.object_location_pub = rospy.Publisher("object_location",ObjectInfo,queue_size=10)
+        self.object_location_pub = rospy.Publisher("/object_location",ObjectInfo,queue_size=10)
 
 
         self.object_info = ObjectInfo()
@@ -33,6 +34,7 @@ class webcam_image:
 
     def check_moving(self,data):
         self.is_moving = data.data
+        print (self.is_moving)
 
     def callback(self,data):
         if not self.is_moving:
@@ -151,7 +153,21 @@ class webcam_image:
 
 
             cv2.waitKey(1)
-
+            
+        if self.is_moving == True:
+            # Debug terminal
+            # print("---- IT'S MOVING -----")
+            self._done = True
+            # Debug terminal
+            # print(self._done)
+            # Calling shutdown
+            rospy.signal_shutdown("ismoving")
+            return
+        
+    def clean_shutdown(self):
+        """Handles ROS shutdown (Ctrl-C) safely."""
+        if not self._done:
+            rospy.logwarn('Aborting: Shutting down safely...')
 
 
 def main(args):
@@ -162,6 +178,8 @@ def main(args):
         rospy.spin()
     except KeyboardInterrupt:
         print("Shutting down")
+    
+    rospy.on_shutdown(ic.clean_shutdown)
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':

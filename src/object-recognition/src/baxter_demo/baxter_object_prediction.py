@@ -14,6 +14,7 @@ from object_recognition.msg import ObjectInfo
 
 class webcam_image:
     def __init__(self):
+        self._done = False
         self.rate = rospy.Rate(10)
         self.bridge = CvBridge()
         # baxter camera Subscriber
@@ -152,7 +153,20 @@ class webcam_image:
 
             cv2.waitKey(1)
 
+            if self.is_moving == True:
+                # Debug terminal
+                # print("---- IT'S MOVING -----")
+                self._done = True
+                # Debug terminal
+                # print(self._done)
+                # Calling shutdown
+                rospy.signal_shutdown("ismoving")
+                return
 
+    def clean_shutdown(self):
+        """Handles ROS shutdown (Ctrl-C) safely."""
+        if not self._done:
+            rospy.logwarn('Aborting: Shutting down safely...')
 
 def main(args):
     rospy.init_node('webcam_image', anonymous=True)

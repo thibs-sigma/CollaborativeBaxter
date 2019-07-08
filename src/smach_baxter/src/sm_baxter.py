@@ -299,23 +299,10 @@ class PICKUP(State):
     def __init__(self):
         State.__init__(self, outcomes=['success', 'stop'])
         
-        # Subscribers
-        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
-
-        self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
-        self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
-
-    def actionRequestedCallback(self, data):
-        self.actionRequested_str = data.data
-        # print (self.actionRequested_str)
-        # return str(actionRequested_str)
-
     def execute(self, userdata):
-        print("Inside ASSEMBLY state machine\n")
+        print("Inside PICKUP state machine\n")
         
         rospy.sleep(1)
-        self.exec_assembly_pub.publish(True)
-        self.desired_object_pub.publish("enclosure")
 
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
@@ -414,8 +401,19 @@ if __name__ == "__main__":
             StateMachine.add('TUCK', TUCK(), transitions={'success':'CHOOSE_ACTION', 'stop':'stop'})
             StateMachine.add('UNTUCK', UNTUCK(), transitions={'success':'CHOOSE_ACTION', 'stop':'stop'})
 
-            # Sub state machine ASSEMBLY
             # Concurrence allow to execute two parallel states
+
+            # PICKUP TASK
+            sm_pickup = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'PICKUPOBJECT_PREDICTION':'predictionOK', 'PICKUP':'success', 'MENU_PICKUP':'requestOK'}})
+
+            with sm_pickup:
+                Concurrence.add('MENU_PICKUP', MENUPICKUP())
+                Concurrence.add('PICKUPOBJECT_PREDICTION', PICKUPOBJECTPREDICTION())
+                Concurrence.add('PICKUP', PICKUP())
+                
+            StateMachine.add('PICKUP_ACTION', sm_pickup, transitions={'success':'UNTUCK', 'fail':'stop'})  
+
+
             # ASSEMBLY TASK
             sm_assembly = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'OBJECT_PREDICTION':'predictionOK', 'ASSEMBLY':'success', 'MENU_ASSEMBLY':'requestOK'}})
 
@@ -426,15 +424,7 @@ if __name__ == "__main__":
                 
             StateMachine.add('ASSEMBLY_ACTION', sm_assembly, transitions={'success':'INSPECTION_ACTION', 'fail':'stop'})
 
-            # PICKUP TASK
-            sm_pickup = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'PICKUPOBJECT_PREDICTION':'predictionOK', 'PICKUP':'success', 'MENU_PICKUP':'requestOK'}})
-
-            with sm_pickup:
-                Concurrence.add('MENU_PICKUP', MENUPICKUP())
-                Concurrence.add('PICKUPOBJECT_PREDICTION', PICKUPOBJECTPREDICTION())
-                Concurrence.add('PICKUP', PICKUP())
-                
-            StateMachine.add('PICKUP_ACTION', sm_pickup, transitions={'success':'success', 'fail':'stop'})     
+   
 
             # INSPECTION TASK
             sm_inspection = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'INSPECTION_PREDICTION':'predictionOK', 'INSPECTION':'success'}})
@@ -443,7 +433,7 @@ if __name__ == "__main__":
                 Concurrence.add('INSPECTION_PREDICTION', INSPECTIONPREDICTION())
                 Concurrence.add('INSPECTION', INSPECTION())
                 
-            StateMachine.add('INSPECTION_ACTION', sm_inspection, transitions={'success':'success', 'fail':'stop'})           
+            StateMachine.add('INSPECTION_ACTION', sm_inspection, transitions={'success':'UNTUCK', 'fail':'stop'})           
         
         # Attach a SMACH introspection server
         sis = IntrospectionServer('baxter_SMACH_introspection', sm, '/BAXTER_DEMO')

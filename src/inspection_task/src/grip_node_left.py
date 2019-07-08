@@ -18,7 +18,7 @@ import baxter_interface
 
 class GripperClient(object):
     def __init__(self):
-        # Set to default left gripper
+        # Set to default right gripper
         # ... and subscribe to it's topic
         ns = 'robot/end_effector/left_gripper/'
 
