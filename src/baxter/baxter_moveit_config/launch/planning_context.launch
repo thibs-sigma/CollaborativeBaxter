@@ -13,11 +13,11 @@
   <!-- The name of the parameter under which the URDF is loaded -->
   <arg name="robot_description" default="robot_description"/>
 
+  <arg name="ridgeback_config" default="dual_hokuyo_lasers" />
+
   <!-- Load universal robotic description format (URDF) -->
   <param if="$(arg load_robot_description)" name="$(arg robot_description)"
-      command="$(find xacro)/xacro --inorder $(find baxter_description)/urdf/baxter.urdf.xacro
-          left_electric_gripper:=$(arg left_electric_gripper)
-          right_electric_gripper:=$(arg right_electric_gripper)"/>
+      command="$(find xacro)/xacro --inorder $(find baxter_description)/urdf/baxter.urdf.xacro"/>
 
   <!-- The semantic description that corresponds to the URDF -->
   <param name="$(arg robot_description)_semantic"

@@ -1,7 +1,7 @@
 <launch>
 
     <!-- ROS PARAMETERS  -->
-    <param name="smach_view" type="bool" value="true" />
+    <arg name="smach_view" default="false" />
 
     <!-- Position right arm -->
     <param name="right_e0" value="0.6787864986392956"/>

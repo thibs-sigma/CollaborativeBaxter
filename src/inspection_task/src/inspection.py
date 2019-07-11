@@ -62,6 +62,8 @@ zplaceback = -0.150 # CHANGE HEIGHT FOR PICKING UP
 
 dplaceback = [0.705, -0.327, zplaceback+0.025, 0.999, 0.016, 0.008, 0.010]
 
+neutral_pose = [0.581, -0.147, 0.098, -0.113, 0.992, 0.042, 0.021]
+
 # THIS WORKS
 
 
@@ -182,7 +184,7 @@ def goingHome():
     gcright = GripperClientRight()
 
     # Debug terminal
-    print "Everything fine! Going home (and then placing bax the box on the table)"
+    print ("Everything fine! Going home (and then placing back the box on the table)")
 
     # Display action on Baxter's screen
     # image_pub.publish(msg_movingScrewing)   
@@ -222,6 +224,9 @@ def goingHome():
 
     # Wait
     rospy.sleep(1)
+
+    # Going neutral pose
+    pnodeRight.initplannode(neutral_pose, "right")   
 
     # Debug terminal
     print ("I'm back to home position. Terminating...")

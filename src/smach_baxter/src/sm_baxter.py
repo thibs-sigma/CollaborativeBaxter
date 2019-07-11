@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import subprocess
 
 from std_msgs.msg import String, Bool
 
@@ -33,6 +34,8 @@ from nav_msgs.msg import Odometry
 from gazebo_msgs.msg import LinkStates
 from math import sqrt
 
+from object_recognition.msg import ObjectInfo
+
 from moveit_msgs.msg import MoveItErrorCodes
 moveit_error_dict = {}
 for name in MoveItErrorCodes.__dict__.keys():
@@ -45,6 +48,15 @@ for name in MoveItErrorCodes.__dict__.keys():
 
 img_untuckingArms = imread('/home/thib/simulation_ws/src/launch_demo/msg/untucking_arms.png')
 msg_untuckingArms = CvBridge().cv2_to_imgmsg(img_untuckingArms, encoding="bgr8")
+
+img_tuckingArms = imread('/home/thib/simulation_ws/src/launch_demo/msg/tucking_arms.png')
+msg_tuckingArms = CvBridge().cv2_to_imgmsg(img_tuckingArms, encoding="bgr8")
+
+img_readyAssembly = imread('/home/thib/simulation_ws/src/launch_demo/msg/ready_assembly_task.png')
+msg_readyAssembly = CvBridge().cv2_to_imgmsg(img_readyAssembly, encoding="bgr8")
+
+img_readyPickup = imread('/home/thib/simulation_ws/src/launch_demo/msg/ready_pickup_object.png')
+msg_readyPickup = CvBridge().cv2_to_imgmsg(img_readyPickup, encoding="bgr8")
 
 
 class RESET(State):
@@ -62,6 +74,43 @@ class RESET(State):
 
         rospy.loginfo("State machine initialized!")
         return 'success'
+
+class UNTUCK(State):
+
+
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'stop'])
+        
+    def execute(self, userdata):
+        print("Inside UNTUCK state machine\n")
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/baxter/baxter_tools/scripts/tuck_arms.py -u")
+        # Baxter screen output
+        image_pub.publish(msg_untuckingArms)
+        rospy.sleep(1)
+        # os.system("/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py -u")
+        subprocess.check_call(["/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py", "-u"])
+        rospy.sleep(1)
+        return 'success'
+
+class TUCK(State):
+
+
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'stop'])
+        
+    def execute(self, userdata):
+        print("Inside TUCK state machine\n")
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/baxter/baxter_tools/scripts/tuck_arms.py -t")
+        # Baxter screen output
+        image_pub.publish(msg_tuckingArms)
+        rospy.sleep(1)
+        # os.system("/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py -t")
+        subprocess.check_call(["/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py", "-t"])
+        rospy.sleep(1)
+        return 'success'
+
 
 class CHOOSEACTION(State):
 
@@ -81,7 +130,10 @@ class CHOOSEACTION(State):
         print("Inside CHOOSEACTION state machine\n")
         # pwd = os.getcwd()
         # os.system(pwd + "/src/launch_demo/src/request_action.py")
-        os.system("/home/thib/simulation_ws/src/launch_demo/src/request_action.py")
+        
+        # os.system("/home/thib/simulation_ws/src/launch_demo/src/request_action.py")
+        subprocess.check_call("/home/thib/simulation_ws/src/launch_demo/src/request_action.py") # Better way to call external python script
+        
         # rospy.sleep(2)
         # rospy.loginfo("State machine initialized!")
         print(self.actionRequested_str)
@@ -102,34 +154,8 @@ class CHOOSEACTION(State):
             print ('Untuck requested')
             return 'untuckRequest'
 
-class TUCK(State):
 
 
-    def __init__(self):
-        State.__init__(self, outcomes=['success', 'stop'])
-        
-    def execute(self, userdata):
-        print("Inside TUCK state machine\n")
-        # pwd = os.getcwd()
-        # os.system(pwd + "/src/baxter/baxter_tools/scripts/tuck_arms.py -t")
-        os.system("/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py -t")
-        # rospy.sleep(1)
-        return 'success'
-
-class UNTUCK(State):
-
-
-    def __init__(self):
-        State.__init__(self, outcomes=['success', 'stop'])
-        
-    def execute(self, userdata):
-        print("Inside UNTUCK state machine\n")
-        # pwd = os.getcwd()
-        # os.system(pwd + "/src/baxter/baxter_tools/scripts/tuck_arms.py -u")
-        os.system("/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py -u")
-        image_pub.publish(msg_untuckingArms)
-        rospy.sleep(1)
-        return 'success'
 
 # ASSEMBLY TASK
 class MENUASSEMBLY(State):
@@ -152,7 +178,10 @@ class MENUASSEMBLY(State):
         # pwd = os.getcwd()
         # os.system(pwd + "/src/launch_demo/src/request_action.py")
         # os.system("/home/thib/simulation_ws/src/smach_baxter/src/request_object_SMACH.py")
-        os.system("/home/thib/simulation_ws/src/assembly_task/src/request_object.py")
+        image_pub.publish(msg_readyAssembly)
+        rospy.sleep(1)
+        # os.system("/home/thib/simulation_ws/src/assembly_task/src/request_object.py")
+        subprocess.check_call("/home/thib/simulation_ws/src/assembly_task/src/request_object.py")
         # rospy.sleep(2)
         # rospy.loginfo("State machine initialized!")
         # print(self.actionRequested_str)
@@ -188,7 +217,8 @@ class OBJECTPREDICTION(State):
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
         # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
-        os.system("/home/thib/simulation_ws/src/assembly_task/src/baxter_object_prediction.py")
+        # os.system("/home/thib/simulation_ws/src/assembly_task/src/baxter_object_prediction.py")
+        subprocess.check_call("/home/thib/simulation_ws/src/assembly_task/src/baxter_object_prediction.py")
         # print(self.actionRequested_str)
         # rospy.sleep(1)
 
@@ -222,7 +252,8 @@ class ASSEMBLY(State):
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
         # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
-        os.system("/home/thib/simulation_ws/src/assembly_task/src/pickup_object.py")
+        # os.system("/home/thib/simulation_ws/src/assembly_task/src/pickup_box.py")
+        subprocess.check_call("/home/thib/simulation_ws/src/assembly_task/src/pickup_box.py")
         # print(self.actionRequested_str)
         # rospy.sleep(1)
 
@@ -238,26 +269,29 @@ class MENUPICKUP(State):
         
         # Subscribers
         rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
+        # rospy.Subscriber("/object_location", ObjectInfo, self.execute)
         
 
     def actionRequestedCallback(self, data):
         self.actionRequested_str = data.data
-    #     print (self.actionRequested_str)
-        # return str(actionRequested_str)
+        # print (self.actionRequested_str)
 
     def execute(self, userdata):
         print("Inside MENUPICKUP state machine\n")
         # pwd = os.getcwd()
         # os.system(pwd + "/src/launch_demo/src/request_action.py")
         # os.system("/home/thib/simulation_ws/src/smach_baxter/src/request_object_SMACH.py")
-        os.system("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/request_object.py")
+        image_pub.publish(msg_readyPickup)
+        rospy.sleep(1)
+        # os.system("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/request_object.py")
+        subprocess.check_call("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/request_object.py")
         # rospy.sleep(2)
         # rospy.loginfo("State machine initialized!")
         # print(self.actionRequested_str)
         # rospy.sleep(1)
         if self.actionRequested_str == 'q':
             return 'stop'
-        else:
+        elif self.actionRequested_str is not None:
             return 'requestOK'
 
 class PICKUPOBJECTPREDICTION(State):
@@ -286,7 +320,8 @@ class PICKUPOBJECTPREDICTION(State):
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
         # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
-        os.system("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
+        # os.system("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
+        subprocess.check_call("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
         # print(self.actionRequested_str)
         # rospy.sleep(1)
 
@@ -307,7 +342,7 @@ class PICKUP(State):
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
         # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
-        os.system("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/pickup_object.py")
+        subprocess.check_call("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/pickup_object.py")
         # print(self.actionRequested_str)
         # rospy.sleep(1)
 
@@ -341,7 +376,7 @@ class INSPECTIONPREDICTION(State):
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
         # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
-        os.system("/home/thib/simulation_ws/src/inspection_task/src/baxter_screws_prediction.py")
+        subprocess.check_call("/home/thib/simulation_ws/src/inspection_task/src/baxter_screws_prediction.py")
         # print(self.actionRequested_str)
         # rospy.sleep(1)
 
@@ -375,7 +410,7 @@ class INSPECTION(State):
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
         # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
-        os.system("/home/thib/simulation_ws/src/inspection_task/src/inspection.py")
+        subprocess.check_call("/home/thib/simulation_ws/src/inspection_task/src/inspection.py")
         # print(self.actionRequested_str)
         # rospy.sleep(1)
 
@@ -404,14 +439,14 @@ if __name__ == "__main__":
             # Concurrence allow to execute two parallel states
 
             # PICKUP TASK
-            sm_pickup = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'PICKUPOBJECT_PREDICTION':'predictionOK', 'PICKUP':'success', 'MENU_PICKUP':'requestOK'}})
+            sm_pickup = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'PICKUPOBJECT_PREDICTION':'predictionOK', 'PICKUP':'success', 'MENU_PICKUP':'requestOK'}, 'fail':{'PICKUPOBJECT_PREDICTION':'stop', 'PICKUP':'stop', 'MENU_PICKUP':'stop'}})
 
             with sm_pickup:
                 Concurrence.add('MENU_PICKUP', MENUPICKUP())
                 Concurrence.add('PICKUPOBJECT_PREDICTION', PICKUPOBJECTPREDICTION())
                 Concurrence.add('PICKUP', PICKUP())
                 
-            StateMachine.add('PICKUP_ACTION', sm_pickup, transitions={'success':'UNTUCK', 'fail':'stop'})  
+            StateMachine.add('PICKUP_ACTION', sm_pickup, transitions={'success':'CHOOSE_ACTION', 'fail':'stop'})  
 
 
             # ASSEMBLY TASK
@@ -433,7 +468,7 @@ if __name__ == "__main__":
                 Concurrence.add('INSPECTION_PREDICTION', INSPECTIONPREDICTION())
                 Concurrence.add('INSPECTION', INSPECTION())
                 
-            StateMachine.add('INSPECTION_ACTION', sm_inspection, transitions={'success':'UNTUCK', 'fail':'stop'})           
+            StateMachine.add('INSPECTION_ACTION', sm_inspection, transitions={'success':'CHOOSE_ACTION', 'fail':'stop'})           
         
         # Attach a SMACH introspection server
         sis = IntrospectionServer('baxter_SMACH_introspection', sm, '/BAXTER_DEMO')
@@ -445,10 +480,6 @@ if __name__ == "__main__":
         # Execute SMACH tree in a separate thread so that we can ctrl-c the script
         smach_thread = threading.Thread(target = sm.execute)
         smach_thread.start()
-
-        
-
-
 
     
     except rospy.ROSInterruptException:

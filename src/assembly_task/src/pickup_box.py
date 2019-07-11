@@ -305,7 +305,7 @@ def screwing():
 # THIS WORKS
 
 
-def arm_setup():
+def right_arm_setup():
     # Get desired joint values from parameter server
     right_w0 = rospy.get_param('right_w0', default=0)
     right_w1 = rospy.get_param('right_w1', default=0)
@@ -316,17 +316,17 @@ def arm_setup():
     right_s1 = rospy.get_param('right_s1', default=0)
 
     # Send the right arm to the desired position
-    home = {'right_w0': right_w0, 'right_w1': right_w1, 'right_w2': right_w2,
+    home_right = {'right_w0': right_w0, 'right_w1': right_w1, 'right_w2': right_w2,
             'right_e0': right_e0, 'right_e1': right_e1, 'right_s0': right_s0, 'right_s1': right_s1}
-    limb = baxter_interface.Limb('right')
-    limb.move_to_joint_positions(home)
+    limb_right = baxter_interface.Limb('right')
+    limb_right.move_to_joint_positions(home_right)
 
 
 if __name__ == '__main__':
     rospy.init_node('pickup_enclosure', log_level=rospy.INFO)
 
     print "Moving arm to correct location"
-    arm_setup()
+    right_arm_setup()
 
     # ROS stuff
     rospy.Subscriber("/cameras/right_hand_camera/camera_info", CameraInfo, initCamera)

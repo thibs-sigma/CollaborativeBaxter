@@ -40,6 +40,12 @@ msg_tuckingArms = CvBridge().cv2_to_imgmsg(img_tuckingArms, encoding="bgr8")
 img_untuckingArms = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/untucking_arms.png')
 msg_untuckingArms = CvBridge().cv2_to_imgmsg(img_untuckingArms, encoding="bgr8")
 
+img_readyAssembly = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/ready_assembly_task.png')
+msg_readyAssembly = CvBridge().cv2_to_imgmsg(img_readyAssembly, encoding="bgr8")
+
+img_readyPickup = cv2.imread('/home/thib/simulation_ws/src/launch_demo/msg/ready_pickup_object.png')
+msg_readyPickup = CvBridge().cv2_to_imgmsg(img_readyPickup, encoding="bgr8")
+
 def check_moving(data):
     global is_moving
     is_moving = data.data
@@ -143,14 +149,26 @@ def poll_object_request():
                 rospy.sleep(1)
                 break          
 
-            else:
+            elif desired_object == 'assembly':
                 # Debug terminal
                 # print "Finding and picking up ",desired_object
                 # Switch off button light
+                image_pub.publish(msg_readyAssembly)
                 leftInnerLight_pub.publish('left_inner_light', False)
                 desired_object_pub.publish(desired_object)
-                print "PROGRAM requested"
-                rospy.sleep(2)
+                print "ASSEMBLY requested"
+                rospy.sleep(1)
+                break
+
+            elif desired_object == 'pickup':
+                # Debug terminal
+                # print "Finding and picking up ",desired_object
+                # Switch off button light
+                image_pub.publish(msg_readyPickup)
+                leftInnerLight_pub.publish('left_inner_light', False)
+                desired_object_pub.publish(desired_object)
+                print "PICKUP requested"
+                rospy.sleep(1)
                 break
 
         while is_moving:
@@ -162,9 +180,9 @@ if __name__ == '__main__':
     rospy.init_node('request_object', log_level=rospy.INFO)
 
     rate = rospy.Rate(100)
-    desired_object_pub = rospy.Publisher("desired_object",String,queue_size=10)
+    desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
 
-    rospy.Subscriber("is_moving",Bool,check_moving)
+    rospy.Subscriber("/is_moving",Bool,check_moving)
     image_pub = rospy.Publisher('/robot/xdisplay', Image, latch=True, queue_size=10)
 
     head_RedLed_pub = rospy.Publisher('/robot/sonar/head_sonar/lights/set_red_level', Float32, queue_size=1)

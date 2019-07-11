@@ -221,7 +221,7 @@ class webcam_image:
                 image_pub.publish(msg_detection)
 
                 # Publish ROS topic
-                # rospy.sleep(2)
+                rospy.sleep(2)
                 
 
 

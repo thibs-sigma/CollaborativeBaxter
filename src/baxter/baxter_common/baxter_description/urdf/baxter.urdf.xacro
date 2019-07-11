@@ -3,8 +3,8 @@
 
   <xacro:arg name="gazebo" default="false"/>
   <!-- Arg for choosing default pedestal or Baxter-Ridgeback mounting -->
-  <xacro:arg name="pedestal" default="true"/>
-  <xacro:arg name="pedestal_ridgeback" default="false"/>
+  <xacro:arg name="pedestal" default="false"/>
+  <xacro:arg name="pedestal_ridgeback" default="true"/>
   
   <xacro:arg name="right_electric_gripper" default="true"/>
   <xacro:arg name="left_electric_gripper" default="true"/>
