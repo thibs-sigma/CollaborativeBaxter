@@ -50,6 +50,12 @@ msg_screwingCompleted = CvBridge().cv2_to_imgmsg(img_screwingCompleted, encoding
 img_missingScrews = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/missing_screws.png')
 msg_missingScrews = CvBridge().cv2_to_imgmsg(img_missingScrews, encoding="bgr8")
 
+img_placingBack = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/placing_back.png')
+msg_placingBack = CvBridge().cv2_to_imgmsg(img_placingBack, encoding="bgr8")
+
+img_goingHome = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/going_home.png')
+msg_goingHome = CvBridge().cv2_to_imgmsg(img_goingHome, encoding="bgr8")
+
 dinspection = [0.690, -0.018, 0.167, 0.353, 0.187, 0.781, -0.479]
 dinspectionCamera = [0.666, -0.023, 0.188, 0.790, 0.464, -0.351, 0.191]
 dplace = [0.880, -0.170, 0.221, 0.390, 0.118, 0.848, -0.338]
@@ -187,7 +193,7 @@ def goingHome():
     print ("Everything fine! Going home (and then placing back the box on the table)")
 
     # Display action on Baxter's screen
-    # image_pub.publish(msg_movingScrewing)   
+    image_pub.publish(msg_placingBack)   
 
     # Wait
     rospy.sleep(1)
@@ -218,6 +224,11 @@ def goingHome():
     gcright.wait()
     print ("RIGHT gripper should be open now")
 
+    # Display action on Baxter's screen
+    image_pub.publish(msg_goingHome)   
+
+    # Wait
+    rospy.sleep(1)
 
     # Going home
     pnodeRight.initplannode(dhome, "right")
@@ -230,8 +241,6 @@ def goingHome():
 
     # Debug terminal
     print ("I'm back to home position. Terminating...")
-
-   
 
     return
 
