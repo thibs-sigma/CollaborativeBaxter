@@ -67,17 +67,14 @@ class RESET(State):
         print("Inside init state machine\n")
         print(rospy.get_name())
 
-        # self.state = 0
+        # Wait
         rospy.sleep(2)
-        # self.check_states()
-  
 
         rospy.loginfo("State machine initialized!")
+
         return 'success'
 
 class UNTUCK(State):
-
-
     def __init__(self):
         State.__init__(self, outcomes=['success', 'stop'])
         
@@ -85,17 +82,23 @@ class UNTUCK(State):
         print("Inside UNTUCK state machine\n")
         # pwd = os.getcwd()
         # os.system(pwd + "/src/baxter/baxter_tools/scripts/tuck_arms.py -u")
+
         # Baxter screen output
         image_pub.publish(msg_untuckingArms)
+        
+        # Wait
         rospy.sleep(1)
+        
+        # Call 'untuck_arms' script
         # os.system("/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py -u")
         subprocess.check_call(["/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py", "-u"])
+
+        # Wait for termination
         rospy.sleep(1)
+        
         return 'success'
 
 class TUCK(State):
-
-
     def __init__(self):
         State.__init__(self, outcomes=['success', 'stop'])
         
@@ -103,18 +106,24 @@ class TUCK(State):
         print("Inside TUCK state machine\n")
         # pwd = os.getcwd()
         # os.system(pwd + "/src/baxter/baxter_tools/scripts/tuck_arms.py -t")
+
         # Baxter screen output
         image_pub.publish(msg_tuckingArms)
+
+        # Wait
         rospy.sleep(1)
+
+        # Call 'tuck_arms' script
         # os.system("/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py -t")
         subprocess.check_call(["/home/thib/simulation_ws/src/baxter/baxter_tools/scripts/tuck_arms.py", "-t"])
+
+        # Wait for termination
         rospy.sleep(1)
+
         return 'success'
 
 
 class CHOOSEACTION(State):
-
-
     def __init__(self):
         State.__init__(self, outcomes=['assemblyRequest', 'pickupRequest', 'tuckRequest', 'untuckRequest', 'stop'])
         
@@ -131,13 +140,13 @@ class CHOOSEACTION(State):
         # pwd = os.getcwd()
         # os.system(pwd + "/src/launch_demo/src/request_action.py")
         
+        # Call 'request_action' script
         # os.system("/home/thib/simulation_ws/src/launch_demo/src/request_action.py")
         subprocess.check_call("/home/thib/simulation_ws/src/launch_demo/src/request_action.py") # Better way to call external python script
         
-        # rospy.sleep(2)
-        # rospy.loginfo("State machine initialized!")
-        print(self.actionRequested_str)
+        # Wait for termination
         rospy.sleep(1)
+
         if self.actionRequested_str == 'q':
             print ('Stop requested')
             return 'stop'
@@ -155,22 +164,17 @@ class CHOOSEACTION(State):
             return 'untuckRequest'
 
 
-
-
 # ASSEMBLY TASK
 class MENUASSEMBLY(State):
-
-
     def __init__(self):
         State.__init__(self, outcomes=['requestOK', 'stop'])
         
         # Subscribers
         rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
         
-
     def actionRequestedCallback(self, data):
         self.actionRequested_str = data.data
-    #     print (self.actionRequested_str)
+        # print (self.actionRequested_str)
         # return str(actionRequested_str)
 
     def execute(self, userdata):
@@ -178,64 +182,45 @@ class MENUASSEMBLY(State):
         # pwd = os.getcwd()
         # os.system(pwd + "/src/launch_demo/src/request_action.py")
         # os.system("/home/thib/simulation_ws/src/smach_baxter/src/request_object_SMACH.py")
+
+        # Baxter screen output
         image_pub.publish(msg_readyAssembly)
+        
+        # Wait
         rospy.sleep(1)
+        
+        # Call 'request_object' script
         # os.system("/home/thib/simulation_ws/src/assembly_task/src/request_object.py")
         subprocess.check_call("/home/thib/simulation_ws/src/assembly_task/src/request_object.py")
-        # rospy.sleep(2)
-        # rospy.loginfo("State machine initialized!")
-        # print(self.actionRequested_str)
-        # rospy.sleep(1)
+
+        # Wait for termination
+        rospy.sleep(1)
+
         if self.actionRequested_str == 'q':
             return 'stop'
         elif self.actionRequested_str == 'enclosure':
             return 'requestOK'
 
 class OBJECTPREDICTION(State):
-
     def __init__(self):
         State.__init__(self, outcomes=['predictionOK', 'stop'])
         
-        # Subscribers
-        # rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
-
-        # self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
-        # self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
-
-    # def actionRequestedCallback(self, data):
-    #     self.actionRequested_str = data.data
-        # print (self.actionRequested_str)
-        # return str(actionRequested_str)
-
     def execute(self, userdata):
         print("Inside OBJECTPREDICTION state machine\n")
-        
-        rospy.sleep(1)
-        # self.exec_assembly_pub.publish(True)
-        # self.desired_object_pub.publish("enclosure")
-
         # pwd = os.getcwd()
-        # os.system(pwd + "/src/assembly_task/src/request_action.py")
-        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
         # os.system("/home/thib/simulation_ws/src/assembly_task/src/baxter_object_prediction.py")
-        subprocess.check_call("/home/thib/simulation_ws/src/assembly_task/src/baxter_object_prediction.py")
-        # print(self.actionRequested_str)
-        # rospy.sleep(1)
 
-        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        # Call 'baxter_object_prediction' script
+        subprocess.check_call("/home/thib/simulation_ws/src/assembly_task/src/baxter_object_prediction.py")
+
+        # Wait for termination
+        rospy.sleep(1)
+
         return 'predictionOK'
 
 class ASSEMBLY(State):
-
-
     def __init__(self):
         State.__init__(self, outcomes=['success', 'stop'])
-        
-        # Subscribers
-        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
-
-        self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
-        self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
 
     def actionRequestedCallback(self, data):
         self.actionRequested_str = data.data
@@ -244,33 +229,24 @@ class ASSEMBLY(State):
 
     def execute(self, userdata):
         print("Inside ASSEMBLY state machine\n")
-        
-        rospy.sleep(1)
-        self.exec_assembly_pub.publish(True)
-        self.desired_object_pub.publish("enclosure")
-
         # pwd = os.getcwd()
-        # os.system(pwd + "/src/assembly_task/src/request_action.py")
-        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
         # os.system("/home/thib/simulation_ws/src/assembly_task/src/pickup_box.py")
-        subprocess.check_call("/home/thib/simulation_ws/src/assembly_task/src/pickup_box.py")
-        # print(self.actionRequested_str)
-        # rospy.sleep(1)
 
-        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        # Call 'pickup_box' script
+        subprocess.check_call("/home/thib/simulation_ws/src/assembly_task/src/pickup_box.py")
+
+        # Wait for termination
+        rospy.sleep(1)
+
         return 'success'
 
 # PICKUP TASK
 class MENUPICKUP(State):
-
-
     def __init__(self):
         State.__init__(self, outcomes=['requestOK', 'stop'])
         
         # Subscribers
-        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
-        # rospy.Subscriber("/object_location", ObjectInfo, self.execute)
-        
+        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)        
 
     def actionRequestedCallback(self, data):
         self.actionRequested_str = data.data
@@ -281,150 +257,100 @@ class MENUPICKUP(State):
         # pwd = os.getcwd()
         # os.system(pwd + "/src/launch_demo/src/request_action.py")
         # os.system("/home/thib/simulation_ws/src/smach_baxter/src/request_object_SMACH.py")
+
+        # Baxter screen output
         image_pub.publish(msg_readyPickup)
+
+        # Wait
         rospy.sleep(1)
+
+        # Call 'request_object' script
         # os.system("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/request_object.py")
         subprocess.check_call("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/request_object.py")
-        # rospy.sleep(2)
-        # rospy.loginfo("State machine initialized!")
-        # print(self.actionRequested_str)
-        # rospy.sleep(1)
+
+        # Wait for termination
+        rospy.sleep(1)
+
         if self.actionRequested_str == 'q':
             return 'stop'
         elif self.actionRequested_str is not None:
             return 'requestOK'
 
 class PICKUPOBJECTPREDICTION(State):
-
     def __init__(self):
         State.__init__(self, outcomes=['predictionOK', 'stop'])
-        
-        # Subscribers
-        # rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
-
-        # self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
-        # self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
-
-    # def actionRequestedCallback(self, data):
-    #     self.actionRequested_str = data.data
-        # print (self.actionRequested_str)
-        # return str(actionRequested_str)
-
+    
     def execute(self, userdata):
         print("Inside OBJECTPREDICTION state machine\n")
-        
-        rospy.sleep(1)
-        # self.exec_assembly_pub.publish(True)
-        # self.desired_object_pub.publish("enclosure")
 
         # pwd = os.getcwd()
-        # os.system(pwd + "/src/assembly_task/src/request_action.py")
-        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
+
+        # Call 'baxter_object_prediction' script
         # os.system("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
         subprocess.check_call("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
-        # print(self.actionRequested_str)
-        # rospy.sleep(1)
 
-        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        # Wait for termination
+        rospy.sleep(1)
+
         return 'predictionOK'
 
 class PICKUP(State):
-
-
     def __init__(self):
         State.__init__(self, outcomes=['success', 'stop'])
         
     def execute(self, userdata):
         print("Inside PICKUP state machine\n")
-        
-        rospy.sleep(1)
 
+        # Call 'pickup_object' script
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
-        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
         subprocess.check_call("/home/thib/simulation_ws/src/object-recognition/src/baxter_demo/pickup_object.py")
-        # print(self.actionRequested_str)
-        # rospy.sleep(1)
 
-        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        # Wait for termination
+        rospy.sleep(1)
+
         return 'success'
 
 # INSPECTION TASK
 class INSPECTIONPREDICTION(State):
-
     def __init__(self):
         State.__init__(self, outcomes=['predictionOK', 'stop'])
         
-        # Subscribers
-        # rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
-
-        # self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
-        # self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
-
-    # def actionRequestedCallback(self, data):
-    #     self.actionRequested_str = data.data
-        # print (self.actionRequested_str)
-        # return str(actionRequested_str)
-
     def execute(self, userdata):
         print("Inside INSPECTIONPREDICTION state machine\n")
-        
-        rospy.sleep(1)
-        # self.exec_assembly_pub.publish(True)
-        # self.desired_object_pub.publish("enclosure")
 
+        # Call 'baxter_screws_prediction' script
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
-        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
         subprocess.check_call("/home/thib/simulation_ws/src/inspection_task/src/baxter_screws_prediction.py")
-        # print(self.actionRequested_str)
-        # rospy.sleep(1)
 
-        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        # Wait for termination
+        rospy.sleep(1)
+
         return 'predictionOK'
 
 class INSPECTION(State):
-
-
     def __init__(self):
         State.__init__(self, outcomes=['success', 'stop'])
         
-        # Subscribers
-        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)
-
-        self.exec_assembly_pub = rospy.Publisher("exec_assembly", Bool, queue_size=10)
-        self.desired_object_pub = rospy.Publisher("/desired_object",String,queue_size=10)
-
-    def actionRequestedCallback(self, data):
-        self.actionRequested_str = data.data
-        # print (self.actionRequested_str)
-        # return str(actionRequested_str)
-
     def execute(self, userdata):
         print("Inside INSPECTION state machine\n")
         
-        rospy.sleep(1)
-        self.exec_assembly_pub.publish(True)
-        self.desired_object_pub.publish("enclosure")
-
+        # Call 'inspection' script
         # pwd = os.getcwd()
-        # os.system(pwd + "/src/assembly_task/src/request_action.py")
-        # os.system("/home/($USER)/simulation_ws/src/assembly_task/src/request_object.py")
         subprocess.check_call("/home/thib/simulation_ws/src/inspection_task/src/inspection.py")
-        # print(self.actionRequested_str)
-        # rospy.sleep(1)
 
-        # SAME LOGIC : if terminated, subscriber = True so return success, etc...
+        # Wait for termination
+        rospy.sleep(1)
+
         return 'success'
 
 if __name__ == "__main__":
-
     image_pub = rospy.Publisher('/robot/xdisplay', Image, latch=True, queue_size=10)
 
     try:
         rospy.init_node('baxter_SMACH')
         
-
         # Create a SMACH state machine
         sm = StateMachine(outcomes=['success', 'fail', 'stop'])
 

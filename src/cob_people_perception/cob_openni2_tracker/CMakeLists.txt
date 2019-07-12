@@ -46,7 +46,7 @@ find_path(OpenNI2_INCLUDE_DIRS
 	HINTS /usr/include/openni2)
 
 find_library(OpenNI2_LIBRARIES
-	NAMES OpenNI2 DummyDevice OniFile PS1090
+	NAMES OpenNI2 DummyDevice OniFile PS1090 realsense2 rs2driver
 	HINTS /usr/lib/ /usr/lib/OpenNI2/Drivers
 	PATH_SUFFIXES lib) 
 message(STATUS ${OpenNI2_LIBRARIES})

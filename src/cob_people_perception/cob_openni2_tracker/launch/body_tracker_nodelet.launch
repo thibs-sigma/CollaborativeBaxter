@@ -1,9 +1,9 @@
 <launch>
 
 	<arg name="tracker_name" default="cob_body_tracker" />
-	<arg name="camera_name" default="kinect2" />		<!-- this is the namespace of your Kinect/Asus camera -->
-	<arg name="color_image_name" default="qhd/image_color" />		<!-- name of the color image topic (excluding the camera namespace) -->
-	<arg name="point_cloud_name" default="qhd/points" />		<!-- name of the point cloud topic (excluding the camera namespace) -->
+	<arg name="camera_name" default="camera" />		<!-- this is the namespace of your Kinect/Asus camera -->
+	<arg name="color_image_name" default="color/image_raw" />		<!-- name of the color image topic (excluding the camera namespace) -->
+	<arg name="point_cloud_name" default="depth_registered/points" />		<!-- name of the point cloud topic (excluding the camera namespace) -->
 	<arg name="standalone_without_camera_driver" default="true" />		<!-- if the camera driver topics (image, point cloud) are not used, activate the standalone version by settign this parameter to true -->
 
 
