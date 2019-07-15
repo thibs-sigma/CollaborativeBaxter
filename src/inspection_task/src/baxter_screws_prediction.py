@@ -35,7 +35,7 @@ class webcam_image:
         self.is_moving = False
         self.is_ready = False
 
-        self.directory = '/home/thib/simulation_ws/src/inspection_task/src'
+        self.directory = '/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/src'
         print "DIRECTORY IS: ",self.directory
         if not os.path.exists(self.directory):
             os.mkdir(self.directory)
@@ -215,7 +215,7 @@ class webcam_image:
                 
 
                 # Publish image on Baxter's head
-                img_detection = cv2.imread('/home/thib/simulation_ws/src/inspection_task/src/detection.png')
+                img_detection = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/src/detection.png')
                 new_img = cv2.resize(img_detection, (1024, 600))
                 msg_detection = CvBridge().cv2_to_imgmsg(new_img, encoding="bgr8")
                 image_pub.publish(msg_detection)
@@ -254,7 +254,7 @@ if __name__ == '__main__':
     print "OpenCV Version:",cv2.__version__
 
     # Load the classifier, class names, scaler, number of clusters and vocabulary
-    # classifier, class_names, std_slr, k, vocabulary = joblib.load("/home/thib/simulation_ws/src/assembly_task/src/dataset_RPLv2.pkl")
+    # classifier, class_names, std_slr, k, vocabulary = joblib.load("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/dataset_RPLv2.pkl")
 
     # Create SIFT object
     # sift = cv2.xfeatures2d.SIFT_create()

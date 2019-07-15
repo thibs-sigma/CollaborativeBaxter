@@ -25,25 +25,25 @@ object_orientation = None
 object_name = None
 desired_object = None
 
-img_screwdriver = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/pickup_screwdriver.png')
+img_screwdriver = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/pickup_screwdriver.png')
 msg_screwdriver = CvBridge().cv2_to_imgmsg(img_screwdriver, encoding="bgr8")
 
-img_marker = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/pickup_marker.png')
+img_marker = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/pickup_marker.png')
 msg_marker = CvBridge().cv2_to_imgmsg(img_marker, encoding="bgr8")
 
-# img_found = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/found_object.png')
+# img_found = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/found_object.png')
 # msg_found = CvBridge().cv2_to_imgmsg(img_found, encoding="bgr8")
 
-img_take = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/take_object.png')
+img_take = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/take_object.png')
 msg_take = CvBridge().cv2_to_imgmsg(img_take, encoding="bgr8")
 
-img_confirm = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/confirm.png')
+img_confirm = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/confirm.png')
 msg_confirm = CvBridge().cv2_to_imgmsg(img_confirm, encoding="bgr8")
 
-img_enjoy = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/enjoy.png')
+img_enjoy = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/enjoy.png')
 msg_enjoy = CvBridge().cv2_to_imgmsg(img_enjoy, encoding="bgr8")
 
-img_errorRequest = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/error_request.png')
+img_errorRequest = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/error_request.png')
 msg_errorRequest = CvBridge().cv2_to_imgmsg(img_errorRequest, encoding="bgr8")
 
 # THIS WORKS

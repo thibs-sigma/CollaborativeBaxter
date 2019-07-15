@@ -29,31 +29,31 @@ screwsDetected = 0
 # screwingOK = False
 # inspectionOK = False
 
-img_gettingReady = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/ready_inspection.png')
+img_gettingReady = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/ready_inspection.png')
 msg_gettingReady = CvBridge().cv2_to_imgmsg(img_gettingReady, encoding="bgr8")
 
-img_inspectionRunning = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/inspection_running.png')
+img_inspectionRunning = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/inspection_running.png')
 msg_inspectionRunning = CvBridge().cv2_to_imgmsg(img_inspectionRunning, encoding="bgr8")
 
-img_inspectionCompleted = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/inspection_completed.png')
+img_inspectionCompleted = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/inspection_completed.png')
 msg_inspectionCompleted = CvBridge().cv2_to_imgmsg(img_inspectionCompleted, encoding="bgr8")
 
-img_movingScrewing = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/moving_screwing.png')
+img_movingScrewing = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/moving_screwing.png')
 msg_movingScrewing = CvBridge().cv2_to_imgmsg(img_movingScrewing, encoding="bgr8")
 
-img_confirmScrewing = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/confirm_screwing.png')
+img_confirmScrewing = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/confirm_screwing.png')
 msg_confirmScrewing = CvBridge().cv2_to_imgmsg(img_confirmScrewing, encoding="bgr8")
 
-img_screwingCompleted = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/screwing_completed.png')
+img_screwingCompleted = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/screwing_completed.png')
 msg_screwingCompleted = CvBridge().cv2_to_imgmsg(img_screwingCompleted, encoding="bgr8")
 
-img_missingScrews = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/missing_screws.png')
+img_missingScrews = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/missing_screws.png')
 msg_missingScrews = CvBridge().cv2_to_imgmsg(img_missingScrews, encoding="bgr8")
 
-img_placingBack = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/placing_back.png')
+img_placingBack = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/placing_back.png')
 msg_placingBack = CvBridge().cv2_to_imgmsg(img_placingBack, encoding="bgr8")
 
-img_goingHome = cv2.imread('/home/thib/simulation_ws/src/inspection_task/msg/going_home.png')
+img_goingHome = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/going_home.png')
 msg_goingHome = CvBridge().cv2_to_imgmsg(img_goingHome, encoding="bgr8")
 
 dinspection = [0.690, -0.018, 0.167, 0.353, 0.187, 0.781, -0.479]

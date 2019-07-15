@@ -10,16 +10,16 @@ from cv_bridge import CvBridge
 is_moving = False
 # _done = False
 
-img_waiting = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/waiting.png')
+img_waiting = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/waiting.png')
 msg_waiting = CvBridge().cv2_to_imgmsg(img_waiting, encoding="bgr8")
 
-img_sleeping = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/sleeping.png')
+img_sleeping = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/sleeping.png')
 msg_sleeping = CvBridge().cv2_to_imgmsg(img_sleeping, encoding="bgr8")
 
-img_assemblyTask = cv2.imread('/home/thib/simulation_ws/src/assembly_task/msg/start_assemblyTask.png')
+img_assemblyTask = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/start_assemblyTask.png')
 msg_assemblyTask = CvBridge().cv2_to_imgmsg(img_assemblyTask, encoding="bgr8")
 
-img_exit = cv2.imread('/home/thib/simulation_ws/src/object-recognition/msg/exit.png')
+img_exit = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/exit.png')
 msg_exit = CvBridge().cv2_to_imgmsg(img_exit, encoding="bgr8")
 
 def check_moving(data):
