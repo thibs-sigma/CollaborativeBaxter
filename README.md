@@ -9,6 +9,8 @@
 ## Dependencies (to be installed separately)
 
 - MoveIt! (`sudo apt install ros-kinetic-moveit*`)
+- Python (tested with Python 3.5.2 + 2.7.12 installed, working with Python 3.5.2)
+- OpenCV (tested with OpenCV 3.3.1-dev)
 
 ## Installation
 
