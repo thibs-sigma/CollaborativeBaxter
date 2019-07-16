@@ -9,7 +9,8 @@
 ## Dependencies (to be installed separately)
 
 - MoveIt! (`sudo apt install ros-kinetic-moveit*`)
-- Python (tested with Python 3.5.2 + 2.7.12 installed, working with Python 3.5.2)
+- Python (tested with Python 3.5.2 + 2.7.12 installed, working with Python 2.7.12)
+- `sudo easy_install -U scikit-learn==0.20` (last version compatible with both Python2 and 3) + `sudo apt install python-sklearn`
 - OpenCV (tested with OpenCV 3.3.1-dev)
 
 ## Installation
