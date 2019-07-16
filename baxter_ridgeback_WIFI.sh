@@ -23,7 +23,7 @@ baxter_hostname="011509P0021.local"
 
 # Set *Either* your computers ip address or hostname. Please note if using
 # your_hostname that this must be resolvable to Baxter.
-your_ip="192.168.125.11"
+your_ip="192.168.125.12"
 #your_hostname="thib-Ubuntu"
 
 # Specify ROS distribution (e.g. indigo, hydro, etc.)

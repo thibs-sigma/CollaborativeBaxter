@@ -49,7 +49,7 @@ position: [-0.44830588525951215, 1.8465293734170667, -0.004601942363656241, -1.0
 
   <!-- need to modify this somehow -->
   <!-- <node pkg="object_recognition" type="pickup_object.py" name="pickup_object" output="screen" respawn="true" launch-prefix="xterm -e "/> -->
-  <node pkg="assembly_task" type="pickup_object.py" name="pickup_object" output="screen" respawn="false" />
+  <node pkg="assembly_task" type="pickup_box.py" name="pickup_object" output="screen" respawn="false" />
 
   <node pkg="assembly_task" type="request_object.py" name="request_object" output="screen" respawn="false" required="true"/>
 
