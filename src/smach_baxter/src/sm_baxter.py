@@ -181,7 +181,7 @@ class MENUASSEMBLY(State):
         print("Inside MENUASSEMBLY state machine\n")
         # pwd = os.getcwd()
         # os.system(pwd + "/src/launch_demo/src/request_action.py")
-        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/smach_baxter/src/request_object_SMACH.py")
+        # os.system("/home//ridgebackbaxter/CollaborativeBaxter_ws/src/smach_baxter/src/request_object_SMACH.py")
 
         # Baxter screen output
         image_pub.publish(msg_readyAssembly)
@@ -190,8 +190,8 @@ class MENUASSEMBLY(State):
         rospy.sleep(1)
         
         # Call 'request_object' script
-        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/request_object.py")
-        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/request_object.py")
+        # os.system("/home//ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/request_object.py")
+        subprocess.check_call("/home//ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/request_object.py")
 
         # Wait for termination
         rospy.sleep(1)
@@ -276,6 +276,45 @@ class MENUPICKUP(State):
         elif self.actionRequested_str is not None:
             return 'requestOK'
 
+class MOVETOOBJECT(State):
+    def __init__(self):
+        State.__init__(self, outcomes=['positionOK', 'fail'])
+
+        rospy.loginfo("Waiting for move_base action server...")
+        self.move_base_ac = SimpleActionClient("/move_base", MoveBaseAction)
+        if not self.move_base_ac.wait_for_server(rospy.Duration(1000)):
+            rospy.logerr("Could not connect to /move_base_ac action server")
+            exit()
+        rospy.loginfo("Connected to move_base_ac action server")
+    
+    def execute(self, userdata):
+        print("Inside MOVETOOBJECT state machine\n")
+
+        rospy.loginfo("Going to pick up location")
+        goal_pick = MoveBaseGoal()
+        goal_pick.target_pose.header.frame_id = "map"
+        goal_pick.target_pose.header.stamp = rospy.Time.now()
+        goal_pick.target_pose.pose.position.x = 2.124
+        goal_pick.target_pose.pose.position.y = 1.397
+        goal_pick.target_pose.pose.position.z = 0.000
+        goal_pick.target_pose.pose.orientation.x = 0.0
+        goal_pick.target_pose.pose.orientation.y = 0.0
+        goal_pick.target_pose.pose.orientation.z = 0.982
+        goal_pick.target_pose.pose.orientation.w = -0.189
+
+        self.move_base_ac.send_goal(goal_pick)
+        wait = self.move_base_ac.wait_for_result(rospy.Duration(100.0))
+        if not wait:
+            rospy.logerr("Robot stuck or not able to reach pick up pose!")
+            return 'fail'
+        else:
+            rospy.loginfo("Pick up pose reached.")
+            return 'positionOK'
+
+        # rospy.sleep(5)
+
+        # return 'positionOK'
+
 class PICKUPOBJECTPREDICTION(State):
     def __init__(self):
         State.__init__(self, outcomes=['predictionOK', 'stop'])
@@ -357,18 +396,25 @@ if __name__ == "__main__":
         # Open the container (HERE IS DEFINED THE SM)
         with sm:
             # Reset the Baxter
-            StateMachine.add('RESET', RESET(), transitions={'success':'UNTUCK'})
-            StateMachine.add('CHOOSE_ACTION', CHOOSEACTION(), transitions={'assemblyRequest':'ASSEMBLY_ACTION', 'pickupRequest':'PICKUP_ACTION', 'tuckRequest':'TUCK', 'untuckRequest':'UNTUCK', 'stop':'stop'})
+            StateMachine.add('RESET', RESET(), transitions={'success':'CHOOSE_ACTION'})
+            StateMachine.add('CHOOSE_ACTION', CHOOSEACTION(), transitions={'assemblyRequest':'ASSEMBLY_ACTION', 'pickupRequest':'MENU_PICKUP', 'tuckRequest':'TUCK', 'untuckRequest':'UNTUCK', 'stop':'stop'})
             StateMachine.add('TUCK', TUCK(), transitions={'success':'CHOOSE_ACTION', 'stop':'stop'})
             StateMachine.add('UNTUCK', UNTUCK(), transitions={'success':'CHOOSE_ACTION', 'stop':'stop'})
+
+            StateMachine.add('MENU_PICKUP', MENUPICKUP(), transitions={'requestOK':'MOVE_TOOBJECT', 'stop':'stop'})
+           
+            StateMachine.add('MOVE_TOOBJECT', MOVETOOBJECT(), transitions={'positionOK':'UNTUCK_AFTERMOVING', 'fail':'stop'})
+
+            StateMachine.add('UNTUCK_AFTERMOVING', UNTUCK(), transitions={'success':'PICKUP_ACTION', 'stop':'stop'})
+
 
             # Concurrence allow to execute two parallel states
 
             # PICKUP TASK
-            sm_pickup = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'PICKUPOBJECT_PREDICTION':'predictionOK', 'PICKUP':'success', 'MENU_PICKUP':'requestOK'}, 'fail':{'PICKUPOBJECT_PREDICTION':'stop', 'PICKUP':'stop', 'MENU_PICKUP':'stop'}})
+            sm_pickup = Concurrence(outcomes=['success', 'fail'], default_outcome='fail', outcome_map={'success':{'PICKUPOBJECT_PREDICTION':'predictionOK', 'PICKUP':'success'}, 'fail':{'PICKUPOBJECT_PREDICTION':'stop', 'PICKUP':'stop'}})
 
             with sm_pickup:
-                Concurrence.add('MENU_PICKUP', MENUPICKUP())
+                # Concurrence.add('MENU_PICKUP', MENUPICKUP())
                 Concurrence.add('PICKUPOBJECT_PREDICTION', PICKUPOBJECTPREDICTION())
                 Concurrence.add('PICKUP', PICKUP())
                 
