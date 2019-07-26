@@ -15,6 +15,7 @@ import planning_node_left as pnodeLeft
 import planning_node_right as pnodeRight
 import baxter_interface
 import tf
+import sys
 
 # Initialization
 camera_state_info = None
@@ -29,35 +30,35 @@ screwsDetected = 0
 # screwingOK = False
 # inspectionOK = False
 
-img_gettingReady = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/ready_inspection.png')
+img_gettingReady = cv2.imread('/home/thib/CollaborativeBaxter/src/inspection_task/msg/ready_inspection.png')
 msg_gettingReady = CvBridge().cv2_to_imgmsg(img_gettingReady, encoding="bgr8")
 
-img_inspectionRunning = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/inspection_running.png')
+img_inspectionRunning = cv2.imread('/home/thib/CollaborativeBaxter/src/inspection_task/msg/inspection_running.png')
 msg_inspectionRunning = CvBridge().cv2_to_imgmsg(img_inspectionRunning, encoding="bgr8")
 
-img_inspectionCompleted = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/inspection_completed.png')
+img_inspectionCompleted = cv2.imread('/home/thib/CollaborativeBaxter/src/inspection_task/msg/inspection_completed.png')
 msg_inspectionCompleted = CvBridge().cv2_to_imgmsg(img_inspectionCompleted, encoding="bgr8")
 
-img_movingScrewing = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/moving_screwing.png')
+img_movingScrewing = cv2.imread('/home/thib/CollaborativeBaxter/src/assembly_task/msg/moving_screwing.png')
 msg_movingScrewing = CvBridge().cv2_to_imgmsg(img_movingScrewing, encoding="bgr8")
 
-img_confirmScrewing = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/confirm_screwing.png')
+img_confirmScrewing = cv2.imread('/home/thib/CollaborativeBaxter/src/assembly_task/msg/confirm_screwing.png')
 msg_confirmScrewing = CvBridge().cv2_to_imgmsg(img_confirmScrewing, encoding="bgr8")
 
-img_screwingCompleted = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/screwing_completed.png')
+img_screwingCompleted = cv2.imread('/home/thib/CollaborativeBaxter/src/assembly_task/msg/screwing_completed.png')
 msg_screwingCompleted = CvBridge().cv2_to_imgmsg(img_screwingCompleted, encoding="bgr8")
 
-img_missingScrews = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/missing_screws.png')
+img_missingScrews = cv2.imread('/home/thib/CollaborativeBaxter/src/inspection_task/msg/missing_screws.png')
 msg_missingScrews = CvBridge().cv2_to_imgmsg(img_missingScrews, encoding="bgr8")
 
-img_placingBack = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/placing_back.png')
+img_placingBack = cv2.imread('/home/thib/CollaborativeBaxter/src/inspection_task/msg/placing_back.png')
 msg_placingBack = CvBridge().cv2_to_imgmsg(img_placingBack, encoding="bgr8")
 
-img_goingHome = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/msg/going_home.png')
+img_goingHome = cv2.imread('/home/thib/CollaborativeBaxter/src/inspection_task/msg/going_home.png')
 msg_goingHome = CvBridge().cv2_to_imgmsg(img_goingHome, encoding="bgr8")
 
-dinspection = [0.690, -0.018, 0.167, 0.353, 0.187, 0.781, -0.479]
-dinspectionCamera = [0.666, -0.023, 0.188, 0.790, 0.464, -0.351, 0.191]
+dinspection = [0.631, -0.113, 0.292, -0.353, -0.276, -0.618, 0.646]
+dinspectionCamera = [0.619, -0.137, 0.323, 0.634, 0.632, -0.348, 0.277]
 dplace = [0.880, -0.170, 0.221, 0.390, 0.118, 0.848, -0.338]
 dhome = [0.705, -0.327, 0.125, 0.999, 0.016, 0.008, 0.010]
 dleftneutral = [0.580, 0.180, 0.099, 0.141, 0.990, 0.007, 0.022]
@@ -117,6 +118,12 @@ def inspection():
 
     pnodeRight.initplannode(dinspection, "right")
 
+    # Wait
+    rospy.sleep(1)
+
+    gcleft.command(position=100.0, effort=0.0) # Open gripper
+    gcleft.wait()
+    
     # Wait
     rospy.sleep(1)
 
@@ -188,6 +195,7 @@ def goingHome():
     print ("Inside goingHome function")
 
     gcright = GripperClientRight()
+    gcleft = GripperClientLeft()
 
     # Debug terminal
     print ("Everything fine! Going home (and then placing back the box on the table)")
@@ -198,6 +206,11 @@ def goingHome():
     # Wait
     rospy.sleep(1)
 
+    gcleft.command(position=100.0, effort=0.0) # Open left gripper
+    gcleft.wait()
+    
+    # Wait
+    rospy.sleep(1)
 
 
     # Move the left arm first (otherwise, collision)

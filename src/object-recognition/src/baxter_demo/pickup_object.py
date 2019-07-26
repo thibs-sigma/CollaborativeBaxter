@@ -12,7 +12,10 @@ from sensor_msgs.msg import CameraInfo, Image
 from geometry_msgs.msg import Point
 from baxter_core_msgs.msg import EndpointState, DigitalIOState, NavigatorState, DigitalOutputCommand
 from object_recognition.msg import ObjectInfo
-import planning_node as pnode
+
+import planning_node_left as pnodeLeft
+import planning_node_right as pnodeRight
+
 import baxter_interface
 import tf
 
@@ -25,26 +28,29 @@ object_orientation = None
 object_name = None
 desired_object = None
 
-img_screwdriver = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/pickup_screwdriver.png')
+img_screwdriver = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/pickup_screwdriver.png')
 msg_screwdriver = CvBridge().cv2_to_imgmsg(img_screwdriver, encoding="bgr8")
 
-img_marker = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/pickup_marker.png')
+img_marker = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/pickup_marker.png')
 msg_marker = CvBridge().cv2_to_imgmsg(img_marker, encoding="bgr8")
 
-# img_found = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/found_object.png')
+# img_found = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/found_object.png')
 # msg_found = CvBridge().cv2_to_imgmsg(img_found, encoding="bgr8")
 
-img_take = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/take_object.png')
+img_take = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/take_object.png')
 msg_take = CvBridge().cv2_to_imgmsg(img_take, encoding="bgr8")
 
-img_confirm = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/confirm.png')
+img_confirm = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/confirm.png')
 msg_confirm = CvBridge().cv2_to_imgmsg(img_confirm, encoding="bgr8")
 
-img_enjoy = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/enjoy.png')
+img_enjoy = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/enjoy.png')
 msg_enjoy = CvBridge().cv2_to_imgmsg(img_enjoy, encoding="bgr8")
 
-img_errorRequest = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/error_request.png')
+img_errorRequest = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/error_request.png')
 msg_errorRequest = CvBridge().cv2_to_imgmsg(img_errorRequest, encoding="bgr8")
+
+img_placingArms = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/placing_arms.png')
+msg_placingArms = CvBridge().cv2_to_imgmsg(img_placingArms, encoding="bgr8")
 
 # THIS WORKS
 
@@ -82,10 +88,10 @@ def getObjectLocation(data):
         object_orientation = tf.transformations.quaternion_from_euler(
             0, 0, -data.theta[i])
         pickup()
-    elif desired_object is not None and desired_object not in data.names:
-        print "That object is not one of the ones on the table. Please pick again."
-        image_pub.publish(msg_errorRequest)
-        desired_object = None
+    # elif desired_object is not None and desired_object not in data.names:
+    #     print "That object is not one of the ones on the table. Please pick again."
+    #     image_pub.publish(msg_errorRequest)
+    #     desired_object = None
 
 
 def pickup():
@@ -94,7 +100,7 @@ def pickup():
     global buttonOK_state
 
     zsafe = 0.00333971663214
-    zpick = -0.185
+    zpick = -0.155  # CHANGE HEIGHT FOR PICKING UP
 
     camera_model = image_geometry.PinholeCameraModel()
     camera_model.fromCameraInfo(camera_info)
@@ -125,7 +131,7 @@ def pickup():
 
     elif object_name == 'screwdriver':
         cx += 0
-        cy += 50
+        cy += 25
 
     # Convert pixel coordinates to baxter coordinates
     xb = (cy - (height/2))*pixel_size*h + x0 + x_offset
@@ -151,6 +157,9 @@ def pickup():
 
     neutral_pose = [0.581, 0.182, 0.100, 0.139, 0.989, 0.009, 0.023]
 
+    poseLeft_movebase = [-0.396, 0.637, -0.008, 0.101, 0.992, 0.071, 0.001] # Arm holding the screwdriver
+    poseRight_movebase = [-0.444, -0.257, 0.115, 0.999, -0.025, -0.011, 0.021] # Free arm
+
     # Publish that Baxter is about to move
     is_moving_pub.publish(True)
 
@@ -169,12 +178,12 @@ def pickup():
     # Debug terminal
     print "Let's pick up the object"
 
-    pnode.initplannode(dsafe_rotated, "left")
+    pnodeLeft.initplannode(dsafe_rotated, "left")
 
     gc.command(position=100.0, effort=50.0)
     gc.wait()
 
-    pnode.initplannode(dpick, "left")
+    pnodeLeft.initplannode(dpick, "left")
 
     if object_name == 'eraser':
         gc.command(position=70.0, effort=50.0)
@@ -186,7 +195,7 @@ def pickup():
         gc.command(position=5.0, effort=70.0)
         gc.wait()
 
-    pnode.initplannode(dsafe_rotated, "left")
+    pnodeLeft.initplannode(dsafe_rotated, "left")
 
     # Debug terminal
     print "We picked up the object!"
@@ -200,32 +209,26 @@ def pickup():
     # Debug terminal
     print "I got the object required!"
 
-    # pnode.initplannode(dsafe_rotated, "left")
-    # pnode.initplannode(initial, "left")
+    # pnodeLeft.initplannode(dsafe_rotated, "left")
+    # pnodeLeft.initplannode(initial, "left")
    
 
-    # EDIT HERE FOR GIVING THE OBJECT (INSTEAD OF PUTTING IT DOWN)
- 
-    # if buttonOK_state == 0:
-    #     print (buttonOK_state)
-    #     print "Please take the object!"
+    # Placing arms correctly in order to move
 
-    #     # BAXTER SCREEN OUTPUT
-    #     image_pub.publish(msg_take)
-    #     rospy.sleep(1)
-    
-    giveToOperator()
+    # BAXTER SCREEN OUTPUT
+    image_pub.publish(msg_placingArms)
 
-    confirmation()
+    pnodeLeft.initplannode(poseLeft_movebase, "left") # Node place object
 
-    rospy.sleep(1)
+    # Wait
+    rospy.sleep(1.0)
 
-    pnode.initplannode(neutral_pose, "left") # Node place object
+    pnodeRight.initplannode(poseRight_movebase, "right") # Node place object
 
-    # gc.command(position=100.0, effort=50.0)
-    # gc.wait()
+    # Wait
+    rospy.sleep(1.0)   
 
-
+    # ----- STOP SCRIPT HERE, MOVE TO GIVE THE OBJECT TO THE OPERATOR ------
 
     # Publish that Baxter has stopped moving
     is_moving_pub.publish(False)
@@ -235,7 +238,7 @@ def pickup():
     # rospy.sleep(1)
     # if confirmation() == True:
     rospy.signal_shutdown("Pickup OK")
-    sys.exit(1)
+
     return
 
 # THIS WORKS

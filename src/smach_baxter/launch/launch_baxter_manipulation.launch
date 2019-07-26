@@ -13,19 +13,19 @@
     <param name="right_w2" value="-2.9582819494370205"/>
 
     <!-- Position left arm -->
-    <param name="left_e0" value="-0.3252039270317077"/>
-    <param name="left_e1" value="1.868388599644434"/>
-    <param name="left_s0" value="-0.14764565083397108"/>
-    <param name="left_s1" value="-1.1006312153077844"/>
-    <param name="left_w0" value="0.2592427531526349"/>
-    <param name="left_w1" value="0.8241311782914386"/>
-    <param name="left_w2" value="-3.058757691043515"/>
+    <param name="left_e0" value="-0.25579129637989273"/>
+    <param name="left_e1" value="1.989956577084353"/>
+    <param name="left_s0" value="-0.2389175077131532"/>
+    <param name="left_s1" value="-1.13054384067155"/>
+    <param name="left_w0" value="0.14611167004608566"/>
+    <param name="left_w1" value="0.679169993836267"/>
+    <param name="left_w2" value="-2.899223689103432"/>
 
     <!-- TF for hand camera link -->
-    <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="1.28 0.10 0.19 0 0 0 base camera_link 1000" />
+    <!-- <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="1.28 0.10 0.19 0 0 0 base camera_link 1000" /> -->
 
     <include file="$(find baxter_moveit_config)/launch/planning_context.launch">
-        <arg name="load_robot_description" value="true"/>
+        <arg name="load_robot_description" value="false"/>
     </include>
 
     <include file="$(find baxter_moveit_config)/launch/move_group.launch">
@@ -47,7 +47,7 @@
     <node name="rsdk_left_gripper_action_server" pkg="baxter_interface" type="gripper_action_server.py" args="--gripper left" required="true" />
     <node name="rsdk_right_gripper_action_server" pkg="baxter_interface" type="gripper_action_server.py" args="--gripper right" required="true" />
 
-    <node pkg="baxter_interface" type="joint_trajectory_action_server.py" name="joint_traj_action_srv" output="screen" respawn="false" />
+    <node pkg="baxter_interface" type="joint_trajectory_action_server.py" name="joint_traj_action_srv" output="screen" respawn="true" />
 
     <!-- FROM ORIGINAL LAUNCH FILES -->
     <!-- <node pkg="assembly_task" type="request_object_SMACH.py" name="request_object" output="screen" respawn="false"/> -->

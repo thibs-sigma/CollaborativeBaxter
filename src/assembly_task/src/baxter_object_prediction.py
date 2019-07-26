@@ -76,7 +76,7 @@ class webcam_image:
                 dst = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 19, 5)
                 
                 # UNCOMMENT IF YOU WANT TO SEE OUTPUT OF OPENCV THRESHOLDING PROCESS
-                cv2.imshow('test' + str(i), dst)
+                # cv2.imshow('test' + str(i), dst)
 
                 # Find contours of each partial frame and put bounding box around contour
                 _, contours, hierarchy = cv2.findContours(dst,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     print "OpenCV Version:",cv2.__version__
 
     # Load the classifier, class names, scaler, number of clusters and vocabulary
-    classifier, class_names, std_slr, k, vocabulary = joblib.load("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/dataset_RPLv2.pkl")
+    classifier, class_names, std_slr, k, vocabulary = joblib.load("/home/thib/CollaborativeBaxter/src/assembly_task/src/dataset_RPLv2.pkl")
 
     # Create SIFT object
     sift = cv2.xfeatures2d.SIFT_create()

@@ -20,7 +20,7 @@ def resize_image(image_file):
         img = cv2.resize(img, (width_new, height_new), interpolation = cv2.INTER_CUBIC)
     return img
 
-train_directory = "dataset_RPL2/train"
+train_directory = "dataset_RPL3/train"
 
 class_names = []
 image_files = []

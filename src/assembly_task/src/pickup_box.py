@@ -27,19 +27,19 @@ desired_object = None
 # screwingOK = False
 # inspectionOK = False
 
-img_box = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/pickup_box.png')
+img_box = cv2.imread('/home/thib/CollaborativeBaxter/src/assembly_task/msg/pickup_box.png')
 msg_box = CvBridge().cv2_to_imgmsg(img_box, encoding="bgr8")
 
-img_movingScrewing = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/moving_screwing.png')
+img_movingScrewing = cv2.imread('/home/thib/CollaborativeBaxter/src/assembly_task/msg/moving_screwing.png')
 msg_movingScrewing = CvBridge().cv2_to_imgmsg(img_movingScrewing, encoding="bgr8")
 
-img_confirmScrewing = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/confirm_screwing.png')
+img_confirmScrewing = cv2.imread('/home/thib/CollaborativeBaxter/src/assembly_task/msg/confirm_screwing.png')
 msg_confirmScrewing = CvBridge().cv2_to_imgmsg(img_confirmScrewing, encoding="bgr8")
 
-img_screwingCompleted = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/screwing_completed.png')
+img_screwingCompleted = cv2.imread('/home/thib/CollaborativeBaxter/src/assembly_task/msg/screwing_completed.png')
 msg_screwingCompleted = CvBridge().cv2_to_imgmsg(img_screwingCompleted, encoding="bgr8")
 
-img_errorRequest = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/msg/error_request.png')
+img_errorRequest = cv2.imread('/home/thib/CollaborativeBaxter/src/assembly_task/msg/error_request.png')
 msg_errorRequest = CvBridge().cv2_to_imgmsg(img_errorRequest, encoding="bgr8")
 
 dinspection = [0.690, -0.018, 0.167, 0.353, 0.187, 0.781, -0.479]
@@ -81,10 +81,10 @@ def getObjectLocation(data):
         object_orientation = tf.transformations.quaternion_from_euler(
             0, 0, -((data.theta[i])+1.571)) # Add 90 degrees rotation
         pickup()
-    elif desired_object is not None and desired_object not in data.names:
-        print "That object is not one of the ones on the table. Please pick again."
-        image_pub.publish(msg_errorRequest)
-        desired_object = None
+    # elif desired_object is not None and desired_object not in data.names:
+    #     print "That object is not one of the ones on the table. Please pick again."
+    #     image_pub.publish(msg_errorRequest)
+    #     desired_object = None
 
 
 def pickup():
@@ -93,7 +93,7 @@ def pickup():
     global buttonOK_state
 
     zsafe = 0.00333971663214
-    zpick = -0.150 # CHANGE HEIGHT FOR PICKING UP
+    zpick = -0.145 # CHANGE HEIGHT FOR PICKING UP
 
     camera_model = image_geometry.PinholeCameraModel()
     camera_model.fromCameraInfo(camera_info)
