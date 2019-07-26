@@ -10,43 +10,43 @@ from cv_bridge import CvBridge
 
 is_moving = False
 
-img_waiting = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/waiting.png')
+img_waiting = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/waiting.png')
 msg_waiting = CvBridge().cv2_to_imgmsg(img_waiting, encoding="bgr8")
 
-img_sleeping = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/sleeping.png')
+img_sleeping = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/sleeping.png')
 msg_sleeping = CvBridge().cv2_to_imgmsg(img_sleeping, encoding="bgr8")
 
-img_assemblyTask = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/assembly_task.png')
+img_assemblyTask = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/assembly_task.png')
 msg_assemblyTask = CvBridge().cv2_to_imgmsg(img_assemblyTask, encoding="bgr8")
 
-img_inspectionTask = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/inspection_task.png')
+img_inspectionTask = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/inspection_task.png')
 msg_inspectionTask = CvBridge().cv2_to_imgmsg(img_inspectionTask, encoding="bgr8")
 
-img_pickupObject = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/pickup_object.png')
+img_pickupObject = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/pickup_object.png')
 msg_pickupObject = CvBridge().cv2_to_imgmsg(img_pickupObject, encoding="bgr8")
 
-img_tuckArms = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/tuck_arms.png')
+img_tuckArms = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/tuck_arms.png')
 msg_tuckArms = CvBridge().cv2_to_imgmsg(img_tuckArms, encoding="bgr8")
 
-img_untuckArms = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/untuck_arms.png')
+img_untuckArms = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/untuck_arms.png')
 msg_untuckArms = CvBridge().cv2_to_imgmsg(img_untuckArms, encoding="bgr8")
 
-img_goHome = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/gotoHome.png')
+img_goHome = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/gotoHome.png')
 msg_goHome = CvBridge().cv2_to_imgmsg(img_goHome, encoding="bgr8")
 
-img_exit = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/exit.png')
+img_exit = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/exit.png')
 msg_exit = CvBridge().cv2_to_imgmsg(img_exit, encoding="bgr8")
 
-img_tuckingArms = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/tucking_arms.png')
+img_tuckingArms = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/tucking_arms.png')
 msg_tuckingArms = CvBridge().cv2_to_imgmsg(img_tuckingArms, encoding="bgr8")
 
-img_untuckingArms = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/untucking_arms.png')
+img_untuckingArms = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/untucking_arms.png')
 msg_untuckingArms = CvBridge().cv2_to_imgmsg(img_untuckingArms, encoding="bgr8")
 
-img_readyAssembly = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/ready_assembly_task.png')
+img_readyAssembly = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/ready_assembly_task.png')
 msg_readyAssembly = CvBridge().cv2_to_imgmsg(img_readyAssembly, encoding="bgr8")
 
-img_readyPickup = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/ready_pickup_object.png')
+img_readyPickup = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/ready_pickup_object.png')
 msg_readyPickup = CvBridge().cv2_to_imgmsg(img_readyPickup, encoding="bgr8")
 
 def check_moving(data):

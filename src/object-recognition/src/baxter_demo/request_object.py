@@ -9,19 +9,19 @@ from cv_bridge import CvBridge
 
 is_moving = False
 
-img_waiting = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/waiting.png')
+img_waiting = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/waiting.png')
 msg_waiting = CvBridge().cv2_to_imgmsg(img_waiting, encoding="bgr8")
 
-img_sleeping = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/sleeping.png')
+img_sleeping = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/sleeping.png')
 msg_sleeping = CvBridge().cv2_to_imgmsg(img_sleeping, encoding="bgr8")
 
-img_requestScrewdriver = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/request_screwdriver.png')
+img_requestScrewdriver = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/request_screwdriver.png')
 msg_requestScrewdriver = CvBridge().cv2_to_imgmsg(img_requestScrewdriver, encoding="bgr8")
 
-img_requestMarker = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/request_marker.png')
+img_requestMarker = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/request_marker.png')
 msg_requestMarker = CvBridge().cv2_to_imgmsg(img_requestMarker, encoding="bgr8")
 
-img_exit = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/exit.png')
+img_exit = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/exit.png')
 msg_exit = CvBridge().cv2_to_imgmsg(img_exit, encoding="bgr8")
 
 def check_moving(data):

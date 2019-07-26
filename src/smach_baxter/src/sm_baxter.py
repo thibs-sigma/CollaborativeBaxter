@@ -48,28 +48,28 @@ import tf
 # Import scripts
 # import request_action
 
-img_untuckingArms = imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/untucking_arms.png')
+img_untuckingArms = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/untucking_arms.png')
 msg_untuckingArms = CvBridge().cv2_to_imgmsg(img_untuckingArms, encoding="bgr8")
 
-img_tuckingArms = imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/tucking_arms.png')
+img_tuckingArms = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/tucking_arms.png')
 msg_tuckingArms = CvBridge().cv2_to_imgmsg(img_tuckingArms, encoding="bgr8")
 
-img_goingHome = imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/going_home.png')
+img_goingHome = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/going_home.png')
 msg_goingHome = CvBridge().cv2_to_imgmsg(img_goingHome, encoding="bgr8")
 
-img_readyAssembly = imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/ready_assembly_task.png')
+img_readyAssembly = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/ready_assembly_task.png')
 msg_readyAssembly = CvBridge().cv2_to_imgmsg(img_readyAssembly, encoding="bgr8")
 
-img_readyPickup = imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/ready_pickup_object.png')
+img_readyPickup = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/ready_pickup_object.png')
 msg_readyPickup = CvBridge().cv2_to_imgmsg(img_readyPickup, encoding="bgr8")
 
-img_movingOperator = imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/moving_operator.png')
+img_movingOperator = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/moving_operator.png')
 msg_movingOperator = CvBridge().cv2_to_imgmsg(img_movingOperator, encoding="bgr8")
 
-img_movingObject = imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/moving_object.png')
+img_movingObject = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/moving_object.png')
 msg_movingObject = CvBridge().cv2_to_imgmsg(img_movingObject, encoding="bgr8")
 
-img_sleeping = imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/sleeping.png')
+img_sleeping = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/sleeping.png')
 msg_sleeping = CvBridge().cv2_to_imgmsg(img_sleeping, encoding="bgr8")
 
 
@@ -104,8 +104,8 @@ class UNTUCK(State):
         rospy.sleep(1)
         
         # Call 'untuck_arms' script
-        # os.system("/home/thib/CollaborativeBaxter/src/baxter/baxter_tools/scripts/tuck_arms.py -u")
-        subprocess.check_call(["/home/thib/CollaborativeBaxter/src/baxter/baxter_tools/scripts/tuck_arms.py", "-u"])
+        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/baxter/baxter_tools/scripts/tuck_arms.py -u")
+        subprocess.check_call(["/home/ridgebackbaxter/CollaborativeBaxter_ws/src/baxter/baxter_tools/scripts/tuck_arms.py", "-u"])
 
         # Wait for termination
         rospy.sleep(1)
@@ -128,8 +128,8 @@ class TUCK(State):
         rospy.sleep(1)
 
         # Call 'tuck_arms' script
-        # os.system("/home/thib/CollaborativeBaxter/src/baxter/baxter_tools/scripts/tuck_arms.py -t")
-        subprocess.check_call(["/home/thib/CollaborativeBaxter/src/baxter/baxter_tools/scripts/tuck_arms.py", "-t"])
+        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/baxter/baxter_tools/scripts/tuck_arms.py -t")
+        subprocess.check_call(["/home/ridgebackbaxter/CollaborativeBaxter_ws/src/baxter/baxter_tools/scripts/tuck_arms.py", "-t"])
 
         # Wait for termination
         rospy.sleep(1)
@@ -200,8 +200,8 @@ class CHOOSEACTION(State):
         # os.system(pwd + "/src/launch_demo/src/request_action.py")
         
         # Call 'request_action' script
-        # os.system("/home/thib/CollaborativeBaxter/src/launch_demo/src/request_action.py")
-        subprocess.check_call("/home/thib/CollaborativeBaxter/src/launch_demo/src/request_action.py") # Better way to call external python script
+        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/src/request_action.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/src/request_action.py") # Better way to call external python script
         
         # Wait for termination
         rospy.sleep(1)
@@ -243,7 +243,7 @@ class MENUASSEMBLY(State):
         print("Inside MENUASSEMBLY state machine\n")
         # pwd = os.getcwd()
         # os.system(pwd + "/src/launch_demo/src/request_action.py")
-        # os.system("/home//thib/CollaborativeBaxter/src/smach_baxter/src/request_object_SMACH.py")
+        # os.system("/home//ridgebackbaxter/CollaborativeBaxter_ws/src/smach_baxter/src/request_object_SMACH.py")
 
         # Baxter screen output
         image_pub.publish(msg_readyAssembly)
@@ -252,8 +252,8 @@ class MENUASSEMBLY(State):
         rospy.sleep(1)
         
         # Call 'request_object' script
-        # os.system("/home//thib/CollaborativeBaxter/src/assembly_task/src/request_object.py")
-        subprocess.check_call("/home/thib/CollaborativeBaxter/src/assembly_task/src/request_object.py")
+        # os.system("/home//ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/request_object.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/request_object.py")
 
         # Wait for termination
         rospy.sleep(1)
@@ -313,10 +313,10 @@ class OBJECTPREDICTION(State):
     def execute(self, userdata):
         print("Inside OBJECTPREDICTION state machine\n")
         # pwd = os.getcwd()
-        # os.system("/home/thib/CollaborativeBaxter/src/assembly_task/src/baxter_object_prediction.py")
+        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/baxter_object_prediction.py")
 
         # Call 'baxter_object_prediction' script
-        subprocess.check_call("/home/thib/CollaborativeBaxter/src/assembly_task/src/baxter_object_prediction.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/baxter_object_prediction.py")
 
         # Wait for termination
         rospy.sleep(1)
@@ -335,10 +335,10 @@ class ASSEMBLY(State):
     def execute(self, userdata):
         print("Inside ASSEMBLY state machine\n")
         # pwd = os.getcwd()
-        # os.system("/home/thib/CollaborativeBaxter/src/assembly_task/src/pickup_box.py")
+        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/pickup_box.py")
 
         # Call 'pickup_box' script
-        subprocess.check_call("/home/thib/CollaborativeBaxter/src/assembly_task/src/pickup_box.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/pickup_box.py")
 
         # Wait for termination
         rospy.sleep(1)
@@ -361,7 +361,7 @@ class MENUPICKUP(State):
         print("Inside MENUPICKUP state machine\n")
         # pwd = os.getcwd()
         # os.system(pwd + "/src/launch_demo/src/request_action.py")
-        # os.system("/home/thib/CollaborativeBaxter/src/smach_baxter/src/request_object_SMACH.py")
+        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/smach_baxter/src/request_object_SMACH.py")
 
         # Baxter screen output
         image_pub.publish(msg_readyPickup)
@@ -370,8 +370,8 @@ class MENUPICKUP(State):
         rospy.sleep(1)
 
         # Call 'request_object' script
-        # os.system("/home/thib/CollaborativeBaxter/src/object-recognition/src/baxter_demo/request_object.py")
-        subprocess.check_call("/home/thib/CollaborativeBaxter/src/object-recognition/src/baxter_demo/request_object.py") # TRY ROSRUN INSTEAD...
+        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/src/baxter_demo/request_object.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/src/baxter_demo/request_object.py") # TRY ROSRUN INSTEAD...
 
         # Wait for termination
         rospy.sleep(1)
@@ -432,8 +432,8 @@ class PICKUPOBJECTPREDICTION(State):
         # pwd = os.getcwd()
 
         # Call 'baxter_object_prediction' script
-        # os.system("/home/thib/CollaborativeBaxter/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
-        subprocess.check_call("/home/thib/CollaborativeBaxter/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
+        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
 
         # Wait for termination
         rospy.sleep(1)
@@ -455,7 +455,7 @@ class PICKUP(State):
         # Call 'pickup_object' script
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
-        subprocess.check_call("/home/thib/CollaborativeBaxter/src/object-recognition/src/baxter_demo/pickup_object.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/src/baxter_demo/pickup_object.py")
         # os.system("rosrun object_recognition pickup_object.py")
 
 
@@ -520,8 +520,8 @@ class GIVEOBJECT(State):
         # pwd = os.getcwd()
 
         # Call 'baxter_object_prediction' script
-        # os.system("/home/thib/CollaborativeBaxter/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
-        subprocess.check_call("/home/thib/CollaborativeBaxter/src/object-recognition/src/baxter_demo/give_object.py")
+        # os.system("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/src/baxter_demo/baxter_object_prediction.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/src/baxter_demo/give_object.py")
 
         # Wait for termination
         rospy.sleep(1)
@@ -539,7 +539,7 @@ class INSPECTIONPREDICTION(State):
         # Call 'baxter_screws_prediction' script
         # pwd = os.getcwd()
         # os.system(pwd + "/src/assembly_task/src/request_action.py")
-        subprocess.check_call("/home/thib/CollaborativeBaxter/src/inspection_task/src/baxter_screws_prediction.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/src/baxter_screws_prediction.py")
 
         # Wait for termination
         rospy.sleep(1)
@@ -555,7 +555,7 @@ class INSPECTION(State):
         
         # Call 'inspection' script
         # pwd = os.getcwd()
-        subprocess.check_call("/home/thib/CollaborativeBaxter/src/inspection_task/src/inspection.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/inspection_task/src/inspection.py")
 
         os.system("rosnode kill joint_traj_action_srv") # Trick for erasing joint goals, not so clean... (launch file is respawning the server then)
 

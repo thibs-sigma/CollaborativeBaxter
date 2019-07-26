@@ -17,16 +17,16 @@ import baxter_interface
 import tf
 
 
-img_take = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/take_object.png')
+img_take = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/take_object.png')
 msg_take = CvBridge().cv2_to_imgmsg(img_take, encoding="bgr8")
 
-img_confirm = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/confirm.png')
+img_confirm = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/confirm.png')
 msg_confirm = CvBridge().cv2_to_imgmsg(img_confirm, encoding="bgr8")
 
-img_enjoy = cv2.imread('/home/thib/CollaborativeBaxter/src/object-recognition/msg/enjoy.png')
+img_enjoy = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/msg/enjoy.png')
 msg_enjoy = CvBridge().cv2_to_imgmsg(img_enjoy, encoding="bgr8")
 
-img_untuckingArms = cv2.imread('/home/thib/CollaborativeBaxter/src/launch_demo/msg/untucking_arms.png')
+img_untuckingArms = cv2.imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/untucking_arms.png')
 msg_untuckingArms = CvBridge().cv2_to_imgmsg(img_untuckingArms, encoding="bgr8")
 
 # Init

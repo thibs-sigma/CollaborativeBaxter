@@ -13,7 +13,7 @@ class baxter_capture_images:
         # baxter camera Subscriber
         self.image_sub = rospy.Subscriber("/cameras/left_hand_camera/image",Image,self.callback)
 
-        self.directory = '/home/thib/CollaborativeBaxter/src/object-recognition/src/bag_of_words/dataset_RPL3/'
+        self.directory = '/home/ridgebackbaxter/CollaborativeBaxter_ws/src/object-recognition/src/bag_of_words/dataset_RPL3/'
         print "DIRECTORY IS: ",self.directory
         if not os.path.exists(self.directory):
             os.mkdir(self.directory)

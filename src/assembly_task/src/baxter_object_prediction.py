@@ -186,7 +186,7 @@ if __name__ == '__main__':
     print "OpenCV Version:",cv2.__version__
 
     # Load the classifier, class names, scaler, number of clusters and vocabulary
-    classifier, class_names, std_slr, k, vocabulary = joblib.load("/home/thib/CollaborativeBaxter/src/assembly_task/src/dataset_RPLv2.pkl")
+    classifier, class_names, std_slr, k, vocabulary = joblib.load("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/assembly_task/src/dataset_RPLv2.pkl")
 
     # Create SIFT object
     sift = cv2.xfeatures2d.SIFT_create()
