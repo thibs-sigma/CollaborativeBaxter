@@ -45,8 +45,6 @@ for name in MoveItErrorCodes.__dict__.keys():
 
 import tf
 
-# Import scripts
-# import request_action
 
 img_untuckingArms = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/untucking_arms.png')
 msg_untuckingArms = CvBridge().cv2_to_imgmsg(img_untuckingArms, encoding="bgr8")
