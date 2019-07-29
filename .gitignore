@@ -3,4 +3,4 @@ devel/
 logs/
 .catkin_tools/
 .vscode/
-src/rtabmap2/mapdb/
+src/rtabmap/mapdb/
