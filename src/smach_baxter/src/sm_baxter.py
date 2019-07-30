@@ -22,9 +22,7 @@ from smach_ros import ServiceState, SimpleActionState, MonitorState, Introspecti
 
 import std_srvs.srv
 
-from geometry_msgs.msg import Twist
-
-from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Pose
+from geometry_msgs.msg import Twist, PoseStamped, PoseWithCovarianceStamped, Pose, PointStamped
 
 from sensor_msgs.msg import JointState
 from actionlib_msgs.msg import GoalStatus
@@ -32,9 +30,13 @@ from actionlib import SimpleActionClient
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from nav_msgs.msg import Odometry
 from gazebo_msgs.msg import LinkStates
-from math import sqrt
+
+import math
 
 from object_recognition.msg import ObjectInfo
+
+from object_recognition_msgs.msg import TableArray
+from object_recognition_msgs.msg import Table
 
 from moveit_msgs.msg import MoveItErrorCodes
 moveit_error_dict = {}
@@ -43,7 +45,9 @@ for name in MoveItErrorCodes.__dict__.keys():
         code = MoveItErrorCodes.__dict__[name]
         moveit_error_dict[code] = name
 
-import tf
+from tf import TransformListener
+
+# import qhull_2d
 
 
 img_untuckingArms = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/untucking_arms.png')
