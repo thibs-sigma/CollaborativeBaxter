@@ -16,3 +16,4 @@
 ## Installation
 
 - Edit `baxter_ridgeback.sh` file --> YOUR_IP (check `ifconfig` output)
+- Build with `catkin_make` (as `catkin build` will fail because of the `ork_recognition` package for table top detection)
