@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import os
 import subprocess
+import time
+import sys
 
 from std_msgs.msg import String, Bool
 
@@ -22,7 +24,7 @@ from smach_ros import ServiceState, SimpleActionState, MonitorState, Introspecti
 
 import std_srvs.srv
 
-from geometry_msgs.msg import Twist, PoseStamped, PoseWithCovarianceStamped, Pose, PointStamped
+from geometry_msgs.msg import Twist, PoseStamped, PoseWithCovarianceStamped, Pose, Point, PointStamped
 
 from sensor_msgs.msg import JointState
 from actionlib_msgs.msg import GoalStatus
@@ -47,7 +49,9 @@ for name in MoveItErrorCodes.__dict__.keys():
 
 from tf import TransformListener
 
-# import qhull_2d
+import qhull_2d
+import min_bounding_rect
+
 
 
 img_untuckingArms = imread('/home/ridgebackbaxter/CollaborativeBaxter_ws/src/launch_demo/msg/untucking_arms.png')
