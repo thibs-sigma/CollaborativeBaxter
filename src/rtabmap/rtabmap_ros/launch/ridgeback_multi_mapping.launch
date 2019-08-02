@@ -7,7 +7,7 @@
   <arg name="rtabmapviz" default="false" />
   <arg name="rgbd_odometry"     default="false"/>
   <arg name="wait_for_transform" default="0.50"/>
-  <arg name="database_path"       default="/home/rpl/rtabmap_ws/src/mapdb/RPL_multi_240719_1600.db" />
+  <arg name="database_path"       default="/home/ridgebackbaxter/CollaborativeBaxter_ws/src/rtabmap/mapdb/RPL_multi_020819_1115.db" />
   <!-- Enable HW Sync via RS2 API -->
   <!-- <arg name="hw_sync" default="false"/>
   <group if="$(arg hw_sync)">

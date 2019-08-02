@@ -121,11 +121,11 @@ def inspection():
     # Wait
     rospy.sleep(1)
 
-    gcleft.command(position=100.0, effort=0.0) # Open gripper
-    gcleft.wait()
+    # gcleft.command(position=100.0, effort=0.0) # Open gripper
+    # gcleft.wait()
     
-    # Wait
-    rospy.sleep(1)
+    # # Wait
+    # rospy.sleep(1)
 
     pnodeLeft.initplannode(dinspectionCamera, "left")
 
@@ -206,11 +206,11 @@ def goingHome():
     # Wait
     rospy.sleep(1)
 
-    gcleft.command(position=100.0, effort=0.0) # Open left gripper
-    gcleft.wait()
+    # gcleft.command(position=100.0, effort=0.0) # Open left gripper
+    # gcleft.wait()
     
-    # Wait
-    rospy.sleep(1)
+    # # Wait
+    # rospy.sleep(1)
 
 
     # Move the left arm first (otherwise, collision)

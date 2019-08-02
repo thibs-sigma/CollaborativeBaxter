@@ -8,6 +8,7 @@
   <arg name="rgbd_odometry"     default="false"/>
   <arg name="wait_for_transform" default="0.5"/>
   <arg name="database_path"       default="/home/ridgebackbaxter/CollaborativeBaxter_ws/src/rtabmap/mapdb/RPL_multi_240719_1500.db" />
+  <!-- <arg name="database_path"       default="/home/ridgebackbaxter/CollaborativeBaxter_ws/src/rtabmap/mapdb/RPL_multi_020819_1115.db" /> -->
   <arg name="localization" default="true"/>
   <arg name="args" default=""/>
 
@@ -79,7 +80,7 @@
       <!-- ICP parameters -->
       <param name="Icp/CorrespondenceRatio"         type="string" value="0.1"/> <!-- Maximum distance between points during registration by ICP -->
       <param name="RGBD/SavedLocalizationIgnored"   type="string" value="true"/>
-      <param name="Icp/MaxRotation"                 type="string" value="0.1"/>
+      <param name="Icp/MaxRotation"                 type="string" value="0.05"/>
       <param name="Icp/MaxTranslation"              type="string" value="0.05"/>
       <!-- RTAB-Map's parameters: do "rosrun rtabmap rtabmap (double-dash)params" to see the list of available parameters. -->
       <param name="Icp/CorrespondenceRatio"      type="string" value="0.1"/>

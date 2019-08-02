@@ -37,9 +37,6 @@ import math
 
 from object_recognition.msg import ObjectInfo
 
-from object_recognition_msgs.msg import TableArray
-from object_recognition_msgs.msg import Table
-
 from moveit_msgs.msg import MoveItErrorCodes
 moveit_error_dict = {}
 for name in MoveItErrorCodes.__dict__.keys():
@@ -48,9 +45,6 @@ for name in MoveItErrorCodes.__dict__.keys():
         moveit_error_dict[code] = name
 
 from tf import TransformListener
-
-import qhull_2d
-import min_bounding_rect
 
 
 
@@ -294,13 +288,24 @@ class MOVETOBOX(State):
         goal_pick = MoveBaseGoal()
         goal_pick.target_pose.header.frame_id = "map"
         goal_pick.target_pose.header.stamp = rospy.Time.now()
-        goal_pick.target_pose.pose.position.x = -0.489
-        goal_pick.target_pose.pose.position.y = 1.965
+
+        # WITHOUT TABLE DETECTION
+        # goal_pick.target_pose.pose.position.x = -0.489
+        # goal_pick.target_pose.pose.position.y = 1.965
+        # goal_pick.target_pose.pose.position.z = 0.000
+        # goal_pick.target_pose.pose.orientation.x = 0.0
+        # goal_pick.target_pose.pose.orientation.y = 0.0
+        # goal_pick.target_pose.pose.orientation.z = 0.895
+        # goal_pick.target_pose.pose.orientation.w = 0.445
+
+        # WITH TABLE DETECTION
+        goal_pick.target_pose.pose.position.x = -0.217
+        goal_pick.target_pose.pose.position.y = 1.369
         goal_pick.target_pose.pose.position.z = 0.000
         goal_pick.target_pose.pose.orientation.x = 0.0
         goal_pick.target_pose.pose.orientation.y = 0.0
-        goal_pick.target_pose.pose.orientation.z = 0.895
-        goal_pick.target_pose.pose.orientation.w = 0.445
+        goal_pick.target_pose.pose.orientation.z = 0.916
+        goal_pick.target_pose.pose.orientation.w = 0.400
 
         self.move_base_ac.send_goal(goal_pick)
         wait = self.move_base_ac.wait_for_result(rospy.Duration(1000.0))
@@ -410,22 +415,59 @@ class MOVETOOBJECT(State):
         goal_pick = MoveBaseGoal()
         goal_pick.target_pose.header.frame_id = "map"
         goal_pick.target_pose.header.stamp = rospy.Time.now()
-        goal_pick.target_pose.pose.position.x = 0.502
-        goal_pick.target_pose.pose.position.y = -0.638
+
+        # Without table detection
+        # goal_pick.target_pose.pose.position.x = 0.502
+        # goal_pick.target_pose.pose.position.y = -0.638
+        # goal_pick.target_pose.pose.position.z = 0.000
+        # goal_pick.target_pose.pose.orientation.x = 0.000
+        # goal_pick.target_pose.pose.orientation.y = 0.000
+        # goal_pick.target_pose.pose.orientation.z = 0.936
+        # goal_pick.target_pose.pose.orientation.w = -0.352
+
+        # With table detection
+        goal_pick.target_pose.pose.position.x = 0.910
+        goal_pick.target_pose.pose.position.y = 0.019
         goal_pick.target_pose.pose.position.z = 0.000
         goal_pick.target_pose.pose.orientation.x = 0.000
         goal_pick.target_pose.pose.orientation.y = 0.000
-        goal_pick.target_pose.pose.orientation.z = 0.936
-        goal_pick.target_pose.pose.orientation.w = -0.352
+        goal_pick.target_pose.pose.orientation.z = 0.915
+        goal_pick.target_pose.pose.orientation.w = -0.404
 
         self.move_base_ac.send_goal(goal_pick)
         wait = self.move_base_ac.wait_for_result(rospy.Duration(1000.0))
+        rospy.on_shutdown(clean_shutdown)
         if not wait:
             rospy.logerr("Robot stuck or not able to reach pick up pose!")
             return 'fail'
         else:
             rospy.loginfo("Pick up pose reached.")
             return 'positionOK'
+
+class MOVETOTABLEOBJ(State):
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'stop'])
+
+        # rospy.sleep(1)
+        
+        
+    def execute(self, userdata):
+        print("Inside MOVETOTABLEOBJ state machine\n")
+
+        # Call 'pickup_object' script
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/assembly_task/src/request_action.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/table_detection/ork_tabletop/python/object_recognition_tabletop/adjust_ridgeback_pickup.py")
+        # os.system("rosrun object_recognition pickup_object.py")
+
+
+
+        # rospy.sleep(1)
+
+        # Wait for termination
+        rospy.sleep(1)
+
+        return 'success'
 
 class PICKUPOBJECTPREDICTION(State):
     def __init__(self):
@@ -499,13 +541,24 @@ class MOVETOOPERATOR(State):
         goal_pick = MoveBaseGoal()
         goal_pick.target_pose.header.frame_id = "map"
         goal_pick.target_pose.header.stamp = rospy.Time.now()
-        goal_pick.target_pose.pose.position.x = -0.489
-        goal_pick.target_pose.pose.position.y = 1.965
+        
+        # WITHOUT TABLE DETECTION
+        # goal_pick.target_pose.pose.position.x = -0.489
+        # goal_pick.target_pose.pose.position.y = 1.965
+        # goal_pick.target_pose.pose.position.z = 0.000
+        # goal_pick.target_pose.pose.orientation.x = 0.0
+        # goal_pick.target_pose.pose.orientation.y = 0.0
+        # goal_pick.target_pose.pose.orientation.z = 0.895
+        # goal_pick.target_pose.pose.orientation.w = 0.445
+
+        # WITH TABLE DETECTION
+        goal_pick.target_pose.pose.position.x = -0.217
+        goal_pick.target_pose.pose.position.y = 1.369
         goal_pick.target_pose.pose.position.z = 0.000
         goal_pick.target_pose.pose.orientation.x = 0.0
         goal_pick.target_pose.pose.orientation.y = 0.0
-        goal_pick.target_pose.pose.orientation.z = 0.895
-        goal_pick.target_pose.pose.orientation.w = 0.445
+        goal_pick.target_pose.pose.orientation.z = 0.916
+        goal_pick.target_pose.pose.orientation.w = 0.400
 
         self.move_base_ac.send_goal(goal_pick)
         wait = self.move_base_ac.wait_for_result(rospy.Duration(1000.0))
@@ -515,6 +568,31 @@ class MOVETOOPERATOR(State):
         else:
             rospy.loginfo("Pick up pose reached.")
             return 'positionOK'
+
+class MOVETOTABLEBOX(State):
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'stop'])
+
+        # rospy.sleep(1)
+        
+        
+    def execute(self, userdata):
+        print("Inside MOVETOTABLEBOX state machine\n")
+
+        # Call 'pickup_object' script
+        # pwd = os.getcwd()
+        # os.system(pwd + "/src/assembly_task/src/request_action.py")
+        subprocess.check_call("/home/ridgebackbaxter/CollaborativeBaxter_ws/src/table_detection/ork_tabletop/python/object_recognition_tabletop/adjust_ridgeback_assembly.py")
+        # os.system("rosrun object_recognition pickup_object.py")
+
+
+
+        # rospy.sleep(1)
+
+        # Wait for termination
+        rospy.sleep(1)
+
+        return 'success'
 
 class GIVEOBJECT(State):
     def __init__(self):
@@ -570,6 +648,13 @@ class INSPECTION(State):
 
         return 'success'
 
+def clean_shutdown():
+    """Handles ROS shutdown (Ctrl-C) safely."""
+    rospy.logwarn('Aborting: Shutting down safely...')
+    rospy.Publisher('/move_base/cancel', actionlib_msgs/GoalID, queue_size=10) 
+    sm.request_preempt()
+    rospy.sleep()
+
 if __name__ == "__main__":
     image_pub = rospy.Publisher('/robot/xdisplay', Image, latch=True, queue_size=10)
     repeatDesiredObject_pub = rospy.Publisher('/desired_object', String, latch=True, queue_size=10)
@@ -592,9 +677,13 @@ if __name__ == "__main__":
             StateMachine.add('MENU_PICKUP', MENUPICKUP(), transitions={'requestOK':'MOVE_TOOBJECT', 'stop':'stop'})
             
            
-            StateMachine.add('MOVE_TOOBJECT', MOVETOOBJECT(), transitions={'positionOK':'UNTUCK_AFTERMOVINGOBJECT', 'fail':'stop'})
-            StateMachine.add('MOVE_TOBOX', MOVETOBOX(), transitions={'positionOK':'UNTUCK_AFTERMOVINGBOX', 'fail':'stop'})
-            StateMachine.add('MOVE_TOOPERATOR', MOVETOOPERATOR(), transitions={'positionOK':'GIVE_OBJECT', 'fail':'stop'})
+            StateMachine.add('MOVE_TOOBJECT', MOVETOOBJECT(), transitions={'positionOK':'MOVE_TOTABLEOBJ', 'fail':'stop'})
+            StateMachine.add('MOVE_TOBOX', MOVETOBOX(), transitions={'positionOK':'MOVE_TOTABLEBOX', 'fail':'stop'})
+            StateMachine.add('MOVE_TOOPERATOR', MOVETOOPERATOR(), transitions={'positionOK':'MOVE_TOTABLEBOX', 'fail':'stop'})
+
+            # StateMachine.add('MOVE_TOTABLEBOX', MOVETOTABLEBOX(), transitions={'success':'UNTUCK_AFTERMOVINGBOX', 'stop':'stop'})
+            StateMachine.add('MOVE_TOTABLEBOX', MOVETOTABLEBOX(), transitions={'success':'GIVE_OBJECT', 'stop':'stop'})
+            StateMachine.add('MOVE_TOTABLEOBJ', MOVETOTABLEOBJ(), transitions={'success':'UNTUCK_AFTERMOVINGOBJECT', 'stop':'stop'})
 
             StateMachine.add('UNTUCK_AFTERMOVINGOBJECT', UNTUCK(), transitions={'success':'PICKUP_ACTION', 'stop':'stop'})
             StateMachine.add('UNTUCK_AFTERMOVINGBOX', UNTUCK(), transitions={'success':'ASSEMBLY_ACTION', 'stop':'stop'})
@@ -647,10 +736,15 @@ if __name__ == "__main__":
 
         # Execute SMACH tree in a separate thread so that we can ctrl-c the script
         smach_thread = threading.Thread(target = sm.execute)
+
         smach_thread.start()
+
+        
 
         # Signal handler (wait for CTRL+C)
         rospy.spin()
+
+        rospy.on_shutdown(clean_shutdown)
 
     
     except rospy.ROSInterruptException:

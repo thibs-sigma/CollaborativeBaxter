@@ -39,6 +39,9 @@
         <node pkg="smach_viewer" type="smach_viewer.py" name="state_machine_viewer" output="screen"/>
     </group>
 
+    <!-- Table top detection -->
+    <include file="$(find object_recognition_tabletop)/launch/table.launch"> </include>
+
     <!-- Launch Baxter's cameras -->
     <node name="camera_control_right" pkg="baxter_tools" type="camera_control.py" args="-o right_hand_camera -r 640x400"/>
     <node name="camera_control_left" pkg="baxter_tools" type="camera_control.py" args="-o left_hand_camera -r 640x400"/>

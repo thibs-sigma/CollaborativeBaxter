@@ -131,7 +131,7 @@ def pickup():
 
     elif object_name == 'screwdriver':
         cx += 0
-        cy += 25
+        cy += 30
 
     # Convert pixel coordinates to baxter coordinates
     xb = (cy - (height/2))*pixel_size*h + x0 + x_offset
