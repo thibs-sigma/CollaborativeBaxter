@@ -152,7 +152,7 @@ def inspection():
         # image_pub.publish(msg_inspectionRunning)
     
 
-    if screwsDetected == 4:
+    if screwsDetected >= 4:
         #Debug terminal
         print "Inspection completed! 4/4 screws detected."
         
@@ -206,17 +206,17 @@ def goingHome():
     # Wait
     rospy.sleep(1)
 
-    # gcleft.command(position=100.0, effort=0.0) # Open left gripper
-    # gcleft.wait()
+    gcleft.command(position=100.0, effort=0.0) # Open left gripper
+    gcleft.wait()
     
-    # # Wait
-    # rospy.sleep(1)
+    # Wait
+    rospy.sleep(1)
 
 
     # Move the left arm first (otherwise, collision)
     pnodeLeft.initplannode(dleftneutral, "left")
 
-    print ("Placing back the box... TO DO")
+    print ("Placing back the box...")
     
     # Wait
     rospy.sleep(1)

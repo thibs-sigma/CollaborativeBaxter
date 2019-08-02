@@ -362,11 +362,12 @@ class MENUPICKUP(State):
         State.__init__(self, outcomes=['requestOK', 'stop'])
         
         # Subscribers
-        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)        
+        rospy.Subscriber("/desired_object", String, self.actionRequestedCallback)  
+             
 
     def actionRequestedCallback(self, data):
         self.actionRequested_str = data.data
-        # print (self.actionRequested_str)
+        print (self.actionRequested_str)
 
     def execute(self, userdata):
         print("Inside MENUPICKUP state machine\n")
@@ -552,13 +553,13 @@ class MOVETOOPERATOR(State):
         # goal_pick.target_pose.pose.orientation.w = 0.445
 
         # WITH TABLE DETECTION
-        goal_pick.target_pose.pose.position.x = -0.217
-        goal_pick.target_pose.pose.position.y = 1.369
+        goal_pick.target_pose.pose.position.x = -0.185
+        goal_pick.target_pose.pose.position.y = 1.174
         goal_pick.target_pose.pose.position.z = 0.000
         goal_pick.target_pose.pose.orientation.x = 0.0
         goal_pick.target_pose.pose.orientation.y = 0.0
-        goal_pick.target_pose.pose.orientation.z = 0.916
-        goal_pick.target_pose.pose.orientation.w = 0.400
+        goal_pick.target_pose.pose.orientation.z = 0.854
+        goal_pick.target_pose.pose.orientation.w = 0.520
 
         self.move_base_ac.send_goal(goal_pick)
         wait = self.move_base_ac.wait_for_result(rospy.Duration(1000.0))

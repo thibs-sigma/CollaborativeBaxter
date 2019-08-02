@@ -111,7 +111,7 @@ def move_pos(goal, limb, timeout=3):
         # cite1: test_moveit.py from NXR repo linked in Course notes
         la.plan()
 
-        la.set_max_velocity_scaling_factor(0.3) # Adjust speed here
+        la.set_max_velocity_scaling_factor(0.5) # Adjust speed here
 
         # Sets Baxter arm in Motion
         la.go()
