@@ -2,9 +2,12 @@
 
 ## Repo for KTH - FACT Project demonstrator of collaborative operations
 
+The whole demo includes the following task, managed by a gloabl state machine:
+
 - Pickup object
 - Assembly task
 - Inspection task
+- Moving from one target to another one
 
 ## Dependencies (to be installed separately, before compiling the project)
 
