@@ -33,6 +33,8 @@ The main installation and running steps are described here.
     export ROS_IP=192.168.125.48
     ```
   - Please use the `ifconfig` command to check what is your `ROS_IP` (here works ONLY for the INTEL NUC, may be different on your system).
+- All the paths are defined to work with the on-board INTEL NUC on Ridgeback. If you need to launch the scripts from your own computer, the easiest way is to globally change the path, thanks to the `Global Search` tool from `VS Code` or any editor: 
+  - Search and replace `/ridgebackbaxter/` by `/YOUR_USER_NAME/`
 
 ## Launch
 
