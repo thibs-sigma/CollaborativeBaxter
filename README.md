@@ -9,7 +9,9 @@ The whole demo includes the following task, managed by a gloabl state machine:
 - Inspection task
 - Moving from one target to another one
 
-For documentation, and instructions on how to install and use this package, check our [wiki](https://github.com/thibs-sigma/CollaborativeBaxter/wiki).
+For documentation, and instructions on how to install and use this package, check the [wiki](https://github.com/thibs-sigma/CollaborativeBaxter/wiki).
+
+The main installation and running steps are described here.
 
 ## Dependencies (to be installed separately, before compiling the project)
 
