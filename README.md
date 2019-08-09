@@ -13,6 +13,10 @@ For documentation, and instructions on how to install and use this package, chec
 
 The main installation and running steps are described here.
 
+## Video
+
+** INSERT VIDEO LINK HERE **
+
 ## Dependencies (to be installed separately, before compiling the project)
 
 - MoveIt! (`sudo apt install ros-kinetic-moveit*`)
