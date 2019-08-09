@@ -9,6 +9,8 @@ The whole demo includes the following task, managed by a gloabl state machine:
 - Inspection task
 - Moving from one target to another one
 
+For documentation, and instructions on how to install and use this package, check our [wiki](../wiki).
+
 ## Dependencies (to be installed separately, before compiling the project)
 
 - MoveIt! (`sudo apt install ros-kinetic-moveit*`)
@@ -66,5 +68,3 @@ The easiest way is to use TeamViewer to remote control the INTEL NUC.
     - **Terminal 5 (new tab or window)**: Finally, launch the global state machine
       - State Machine: `roslaunch smach_baxter launch_baxter_manipulation.launch`
       - If you want a visual output, open a new terminal, and launch `rosrun smach_viewer smach_viewer.py`
-
-   
