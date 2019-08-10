@@ -15,7 +15,13 @@ The main installation and running steps are described here.
 
 ## Video
 
-** INSERT VIDEO LINK HERE **
+** INSERT NEW VIDEO LINK HERE **
+
+<video>
+    <source src="https://drive.google.com/uc?export=view&id=1-WNYlI_g6o_RBtmpFYg9Q8AWGv-uco10" type='video/mp4'>
+</video>
+
+
 
 ## Dependencies (to be installed separately, before compiling the project)
 
